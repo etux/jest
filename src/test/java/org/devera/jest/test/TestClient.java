@@ -28,4 +28,11 @@ public interface TestClient {
             }
     )
     Response operation2();
+
+    @ReSTOperation
+    Response operation3();
+
+
+    @ReSTOperation
+    Response operation4(Request request);
 }

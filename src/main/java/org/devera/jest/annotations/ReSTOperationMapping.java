@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 public @interface ReSTOperationMapping {
 
     int statusCode();
-    Class responseClass();
+    Class responseClass() default Void.class;
 }

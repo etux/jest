@@ -51,7 +51,7 @@ public class ReSTAnnotationProcessor extends AbstractProcessor {
                 try {
                     note(reSTOperationMapping.responseClass().getName());
                 } catch (MirroredTypeException exception) {
-                    exception.printStackTrace();
+                    note(exception.getTypeMirror().toString());
                 }
 
             }
