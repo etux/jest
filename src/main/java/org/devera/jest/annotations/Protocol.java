@@ -14,4 +14,9 @@ public enum Protocol {
     public int getDefaultPortNumber() {
         return defaultPortNumber;
     }
+
+    @Override
+    public String toString() {
+        return this.name().toLowerCase();
+    }
 }

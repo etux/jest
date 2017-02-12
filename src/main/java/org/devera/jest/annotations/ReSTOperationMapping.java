@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Target(ElementType.ANNOTATION_TYPE)
-@Retention(RetentionPolicy.SOURCE)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface ReSTOperationMapping {
 
-    int statusCode();
+    int statusCode() default 200;
     Class responseClass() default Void.class;
 }
