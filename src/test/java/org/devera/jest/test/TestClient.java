@@ -11,7 +11,8 @@ import org.devera.jest.annotations.Response;
         protocol = Protocol.HTTP,
         contextPath = "/path",
         defaultMappings = {
-                @ReSTOperationMapping(statusCode = 500, responseClass = SystemErrorResponse.class)
+                @ReSTOperationMapping(statusCode = 500, responseClass = SystemErrorResponse.class),
+                @ReSTOperationMapping(statusCode = 200, responseClass = TestResponse.class),
         }
 )
 public interface TestClient {

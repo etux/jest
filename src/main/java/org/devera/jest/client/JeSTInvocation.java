@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import javax.ws.rs.client.Client;
@@ -17,7 +18,7 @@ import org.devera.jest.annotations.ReSTClient;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
 
-public class JeSTInvocation<I,O> {
+public class JeSTInvocation<I, O> {
 
     private final Configuration configuration;
     private final Object clientInstance;
@@ -31,8 +32,7 @@ public class JeSTInvocation<I,O> {
             final String methodName,
             final I request,
             final Client jaxrsClient
-    )
-    {
+    ) {
         this.configuration = configuration;
         this.clientInstance = clientInstance;
         this.methodName = methodName;
@@ -42,7 +42,7 @@ public class JeSTInvocation<I,O> {
 
 
     public JeSTResult<O> invoke() {
-        final ReSTOperation operation = findReSTOperation(methodName,  request.getClass().getInterfaces()[0]);
+        final ReSTOperation operation = findReSTOperation(methodName, request.getClass().getInterfaces()[0]);
         final Invocation invocation = getApplicationWebTarget()
                 .request()
                 .build(operation.method());
@@ -62,8 +62,7 @@ public class JeSTInvocation<I,O> {
         return clazz -> {
             try {
                 return clazz.getMethod(methodName, requestClass);
-            }
-            catch (NoSuchMethodException e) {
+            } catch (NoSuchMethodException e) {
                 return null;
             }
         };
@@ -86,15 +85,17 @@ public class JeSTInvocation<I,O> {
     }
 
     private ReSTOperationMapping findOperationMapping(ReSTOperation operation, Response response) {
-        return getReSTOperationMappingsStream(operation.mappings())
+        return getOperationMappingForResponse(
+                getReSTOperationMappingsStream(operation.mappings()),
+                response)
+                .orElseGet(getReSTOperationMappingFromClientSupplier(operation, response));
+    }
+
+    private Supplier<ReSTOperationMapping> getReSTOperationMappingFromClientSupplier(ReSTOperation operation, Response response) {
+        return () -> getReSTOperationMappingsStream(checkAndAssign(clientInstance).defaultMappings())
                 .filter(getReSTOperationMappingPredicate(response))
                 .findFirst()
-                .orElseGet(
-                        () -> getReSTOperationMappingsStream(checkAndAssign(clientInstance).defaultMappings())
-                                .filter(getReSTOperationMappingPredicate(response))
-                                .findFirst()
-                                .orElseThrow(() -> new NoMappingDefinedException(clientInstance, operation, response.getStatus()))
-                );
+                .orElseThrow(() -> new NoMappingDefinedException(clientInstance, operation, response.getStatus()));
     }
 
     private Predicate<ReSTOperationMapping> getReSTOperationMappingPredicate(final Response response) {
@@ -120,9 +121,12 @@ public class JeSTInvocation<I,O> {
     }
 
     private ReSTClient getAnnotationFromClient(final Object client) {
-        return client.getClass().getInterfaces()[0].getAnnotation(ReSTClient.class);
+        return Arrays.stream(client.getClass().getInterfaces())
+                .filter(hasAnnotation(ReSTClient.class))
+                .findFirst()
+                .map(clientInterface -> clientInterface.getAnnotation(ReSTClient.class))
+                .orElseThrow(() -> new AnnotationNotFoundException(ReSTClient.class));
     }
-
 
 
     void print(ReSTClient reSTClient) {
