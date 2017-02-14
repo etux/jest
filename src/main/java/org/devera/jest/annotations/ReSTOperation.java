@@ -17,6 +17,15 @@ public @interface ReSTOperation {
 
     String path() default "";
 
-    String method() default "GET";
+    Operations method() default Operations.GET;
+
+    enum Operations {
+        GET,
+        POST,
+        PUT,
+        DELETE,
+        OPTIONS,
+        HEAD
+    }
 
 }

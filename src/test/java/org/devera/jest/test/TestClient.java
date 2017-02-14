@@ -6,6 +6,10 @@ import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
 import org.devera.jest.annotations.Response;
 
+import static org.devera.jest.annotations.ReSTOperation.Operations.DELETE;
+import static org.devera.jest.annotations.ReSTOperation.Operations.POST;
+import static org.devera.jest.annotations.ReSTOperation.Operations.PUT;
+
 @ReSTClient(
         protocol = Protocol.HTTP,
         contextPath = "/path",
@@ -22,7 +26,7 @@ public interface TestClient {
 
     @ReSTOperation(
             path = "/",
-            method = "POST",
+            method = POST,
             mappings = {
                     @ReSTOperationMapping(statusCode = 200, responseClass = OkTestResponse.class),
                     @ReSTOperationMapping(statusCode = 404, responseClass = NotFoundResponse.class)
@@ -31,14 +35,17 @@ public interface TestClient {
     Response simplePostOperationWithOwnMappings(PostRequest request);
 
     @ReSTOperation(
+            method = PUT,
             mappings = {
                     @ReSTOperationMapping(statusCode = 200, responseClass = OkTestResponse.class),
                     @ReSTOperationMapping(statusCode = 409, responseClass = ConflictResponse.class)
             }
     )
-    Response operation2();
+    Response simplePutOperationWithOwnMappings();
 
 
-    @ReSTOperation
-    Response operation3();
+    @ReSTOperation(
+            method = DELETE
+    )
+    Response simpleDeleteOperation();
 }

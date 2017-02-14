@@ -44,7 +44,7 @@ public class JeSTClient {
             ReSTOperation operation = ReflectionUtils.findReSTOperation(clientInstance, methodName, request.getClass());
 
             switch(operation.method()) {
-                case "GET":
+                case GET:
                     return new JeSTGetInvocation<>(
                             configuration,
                             clientInstance,
@@ -52,7 +52,7 @@ public class JeSTClient {
                             request,
                             jaxrsClient
                     );
-                case "POST":
+                case POST:
                     return new JeSTPostInvocation<>(
                             configuration,
                             clientInstance,

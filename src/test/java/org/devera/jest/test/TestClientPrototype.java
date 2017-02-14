@@ -29,12 +29,14 @@ public class TestClientPrototype implements TestClient {
     }
 
     @Override
-    public Response operation2() {
-        return null;
+    public Response simplePutOperationWithOwnMappings() {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithOwnMappings", null);
+        return result.getPayload();
     }
 
     @Override
-    public Response operation3() {
-        return null;
+    public Response simpleDeleteOperation() {
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleDeleteOperation", null);
+        return result.getPayload();
     }
 }

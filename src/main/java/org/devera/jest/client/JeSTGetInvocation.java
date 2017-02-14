@@ -17,7 +17,7 @@ public class JeSTGetInvocation<I,O> extends JeSTInvocation<I,O> {
             final ReSTOperation operation = getReSTOperation();
             final Invocation invocation = getApplicationWebTarget()
                        .request()
-                       .build(operation.method());
+                       .buildGet();
                return processResponse(operation, invocation.invoke());
            }
     }
