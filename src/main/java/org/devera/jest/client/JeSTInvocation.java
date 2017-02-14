@@ -47,10 +47,21 @@ public abstract class JeSTInvocation<I, O> {
             final Response response
     ) {
         try {
-            final Class<O> responseClass = (Class<O>) findOperationMapping(clientInstance, operation, response).responseClass();
+            final ReSTOperationMapping operationMapping = findOperationMapping(clientInstance, operation, response);
+            final Class<O> responseClass = getResponseClassOrThrowException(operationMapping);
             return new JeSTResult<>(responseClass, response.readEntity(responseClass));
         } catch (NoMappingDefinedException e) {
             return null;
+        }
+    }
+
+    private Class<O> getResponseClassOrThrowException(ReSTOperationMapping operationMapping) {
+        if (Void.class.equals(operationMapping.exceptionClass())) return (Class<O>) operationMapping.responseClass();
+        if (!RuntimeException.class.isAssignableFrom(operationMapping.exceptionClass())) return (Class<O>) Void.class;
+        try {
+            throw (RuntimeException) operationMapping.exceptionClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 

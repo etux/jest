@@ -11,4 +11,5 @@ public @interface ReSTOperationMapping {
 
     int statusCode() default 200;
     Class responseClass() default Void.class;
+    Class exceptionClass() default Void.class;
 }

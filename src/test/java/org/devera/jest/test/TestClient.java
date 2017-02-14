@@ -29,7 +29,7 @@ public interface TestClient {
             method = POST,
             mappings = {
                     @ReSTOperationMapping(statusCode = 200, responseClass = OkTestResponse.class),
-                    @ReSTOperationMapping(statusCode = 404, responseClass = NotFoundResponse.class)
+                    @ReSTOperationMapping(statusCode = 404, exceptionClass = NotFoundException.class)
             }
     )
     Response simplePostOperationWithOwnMappings(PostRequest request);

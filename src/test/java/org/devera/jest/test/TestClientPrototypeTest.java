@@ -125,4 +125,32 @@ public class TestClientPrototypeTest {
         );
     }
 
+    @Test(expected = NotFoundException.class)
+    public void simplePostOperation_with_notFound_should_throw_exception() {
+
+        mockServerClient.when(
+                request()
+                    .withMethod("POST")
+                    .withPath("/")
+                    .withHeader("Content-Type", "application/json")
+        ).respond(
+                response()
+                    .withHeader("Content-Type", "application/json")
+                    .withStatusCode(404)
+        );
+
+        PostRequest request = new PostRequest();
+        request.setInput("input");
+
+        Response response = new TestClientPrototype(configuration).simplePostOperationWithOwnMappings(request);
+
+        mockServerClient.verify(
+                request()
+                    .withMethod("POST")
+                    .withPath("/")
+                    .withHeader("Content-Type", "application/json")
+                    .withBody("{\"input\":\"input\"}")
+        );
+    }
+
 }
