@@ -1,6 +1,5 @@
 package org.devera.jest.test;
 
-import org.devera.jest.annotations.Request;
 import org.devera.jest.annotations.Response;
 import org.junit.Before;
 import org.junit.Rule;
@@ -122,7 +121,7 @@ public class TestClientPrototypeTest {
                     .withMethod("POST")
                     .withPath("/")
                     .withHeader("Content-Type", "application/json")
-                    .withBody("{input: 'input'}")
+                    .withBody("{\"input\":\"input\"}")
         );
     }
 
