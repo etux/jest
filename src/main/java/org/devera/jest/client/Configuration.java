@@ -33,7 +33,6 @@ public class Configuration {
                 .append(host)
                 .append(":")
                 .append(Optional.ofNullable(portNumber).orElse(String.valueOf(reSTClient.protocol().getDefaultPortNumber())))
-                .append("/")
                 .append(Optional.ofNullable(contextPath).orElse(reSTClient.contextPath()))
                 .toString();
     }

@@ -12,13 +12,13 @@ import org.devera.jest.annotations.Response;
         contextPath = "/path",
         defaultMappings = {
                 @ReSTOperationMapping(statusCode = 500, responseClass = SystemErrorResponse.class),
-                @ReSTOperationMapping(statusCode = 200, responseClass = TestResponse.class),
+                @ReSTOperationMapping(statusCode = 200, responseClass = OkTestResponse.class),
         }
 )
 public interface TestClient {
 
     @ReSTOperation
-    Response simpleGetOperation(Request request);
+    Response simpleGetOperationWithInheritsReSTClientDefaultMappings(Request request);
 
 
     @ReSTOperation(
@@ -29,7 +29,7 @@ public interface TestClient {
                     @ReSTOperationMapping(statusCode = 409, responseClass = NotFoundResponse.class)
             }
     )
-    Response operation1();
+    Response operationWithOwnMappings();
 
     @ReSTOperation(
             mappings = {

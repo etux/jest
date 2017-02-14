@@ -50,12 +50,16 @@ public class JeSTInvocation<I, O> {
     }
 
     private <R> ReSTOperation findReSTOperation(final String methodName, final Class<R> request) {
-        return Arrays.stream(clientInstance.getClass().getInterfaces())
-                .filter(hasAnnotation(ReSTClient.class))
+        return getClassWithAnnotationStream()
                 .map(getMethodSafely(methodName, request))
                 .map(method -> method.getAnnotation(ReSTOperation.class))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Method not found"));
+                .orElseThrow(() -> new AnnotationNotFoundException(ReSTOperation.class));
+    }
+
+    private Stream<Class<?>> getClassWithAnnotationStream() {
+        return Arrays.stream(clientInstance.getClass().getInterfaces())
+                .filter(hasAnnotation(ReSTClient.class));
     }
 
     private <R> Function<Class<?>, Method> getMethodSafely(String methodName, Class<R> requestClass) {

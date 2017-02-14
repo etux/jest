@@ -18,13 +18,13 @@ public class TestClientPrototype implements TestClient {
     }
 
     @Override
-    public Response simpleGetOperation(Request request) {
-        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperation", request);
+    public Response simpleGetOperationWithInheritsReSTClientDefaultMappings(Request request) {
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithInheritsReSTClientDefaultMappings", request);
         return result.getPayload();
     }
 
     @Override
-    public Response operation1() {
+    public Response operationWithOwnMappings() {
         return null;
     }
 
