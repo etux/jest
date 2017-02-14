@@ -42,7 +42,7 @@ public class JeSTInvocation<I, O> {
 
 
     public JeSTResult<O> invoke() {
-        final ReSTOperation operation = findReSTOperation(methodName, request.getClass().getInterfaces()[0]);
+        final ReSTOperation operation = findReSTOperation(methodName, request.getClass());
         final Invocation invocation = getApplicationWebTarget()
                 .request()
                 .build(operation.method());
