@@ -48,21 +48,16 @@ public abstract class JeSTInvocation<I, O> {
     ) {
         try {
             final ReSTOperationMapping operationMapping = findOperationMapping(clientInstance, operation, response);
-            final Class<O> responseClass = getResponseClassOrThrowException(operationMapping);
+            final Class<O> responseClass = getResponseClass(operationMapping);
             return new JeSTResult<>(responseClass, response.readEntity(responseClass));
         } catch (NoMappingDefinedException e) {
             return null;
         }
     }
 
-    private Class<O> getResponseClassOrThrowException(ReSTOperationMapping operationMapping) {
+    private Class<O> getResponseClass(ReSTOperationMapping operationMapping) {
         if (Void.class.equals(operationMapping.exceptionClass())) return (Class<O>) operationMapping.responseClass();
-        if (!RuntimeException.class.isAssignableFrom(operationMapping.exceptionClass())) return (Class<O>) Void.class;
-        try {
-            throw (RuntimeException) operationMapping.exceptionClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+        return operationMapping.exceptionClass();
     }
 
     void print(ReSTClient reSTClient) {

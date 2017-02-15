@@ -26,7 +26,11 @@ public class JeSTClient {
             final String methodName,
             final I request
     ) {
-        return (JeSTResult<O>) createInvocation(methodName, request).invoke();
+        final JeSTResult<O> result = (JeSTResult<O>) createInvocation(methodName, request).invoke();
+        if (result.isError()) {
+            throw result.getException();
+        }
+        return result;
     }
 
     private <I, O> JeSTInvocation<I, O> createInvocation(final String methodName, final I request) {

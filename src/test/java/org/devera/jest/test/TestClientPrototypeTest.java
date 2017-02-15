@@ -137,12 +137,13 @@ public class TestClientPrototypeTest {
                 response()
                     .withHeader("Content-Type", "application/json")
                     .withStatusCode(404)
+                    .withBody("{\"exception\" : \"NotFoundException\"}")
         );
 
         PostRequest request = new PostRequest();
         request.setInput("input");
 
-        Response response = new TestClientPrototype(configuration).simplePostOperationWithOwnMappings(request);
+        new TestClientPrototype(configuration).simplePostOperationWithOwnMappings(request);
 
         mockServerClient.verify(
                 request()

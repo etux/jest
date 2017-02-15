@@ -3,6 +3,7 @@ package org.devera.jest.client;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.MediaType;
 
 import org.devera.jest.annotations.ReSTOperation;
 
@@ -14,7 +15,11 @@ public class JeSTPostInvocation<I,O> extends JeSTInvocation<I, O> {
     @Override
     protected JeSTResult<O> invoke() {
         final ReSTOperation operation = getReSTOperation();
-        final Invocation invocation = getApplicationWebTarget().request().buildPost(Entity.entity(request, "application/json"));
+        final Invocation invocation = getApplicationWebTarget()
+                .request()
+                .buildPost(
+                        Entity.entity(request, MediaType.APPLICATION_JSON)
+                );
         return processResponse(
                 operation,
                 invocation.invoke());

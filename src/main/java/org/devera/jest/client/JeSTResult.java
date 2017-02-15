@@ -17,4 +17,11 @@ public class JeSTResult<T> {
         return responseClass.cast(resultPayload);
     }
 
+    public boolean isError() {
+        return RuntimeException.class.isAssignableFrom(responseClass);
+    }
+
+    public RuntimeException getException() {
+        return RuntimeException.class.cast(resultPayload);
+    }
 }
