@@ -15,19 +15,19 @@ import org.devera.jest.annotations.ReSTClient;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
 
-class ReflectionUtils {
+public final class ReflectionUtils {
 
     private ReflectionUtils(){}
 
-    static <R> ReSTOperation findReSTOperation(final Object clientInstance, final String methodName, final Class<R> request) {
+    public static <R> ReSTOperation findReSTOperation(final Object clientInstance, final String methodName, final R request) {
         return getClassWithAnnotationStream(clientInstance)
-                .map(getMethodSafely(methodName, request))
+                .map(getMethodSafely(methodName, getClassOrNull(request)))
                 .map(method -> method.getAnnotation(ReSTOperation.class))
                 .findFirst()
                 .orElseThrow(() -> new AnnotationNotFoundException(ReSTOperation.class));
     }
 
-    static ReSTOperationMapping findOperationMapping(Object clientInstance, ReSTOperation operation, Response response) {
+    public static ReSTOperationMapping findOperationMapping(Object clientInstance, ReSTOperation operation, Response response) {
         return getOperationMappingForResponse(
                 getReSTOperationMappingsStream(operation.mappings()),
                 response)
@@ -42,9 +42,10 @@ class ReflectionUtils {
     private static <R> Function<Class<?>, Method> getMethodSafely(String methodName, Class<R> requestClass) {
         return clazz -> {
             try {
-                return clazz.getMethod(methodName, requestClass);
+                if (requestClass == null) return clazz.getMethod(methodName);
+                else return clazz.getMethod(methodName, requestClass);
             } catch (NoSuchMethodException e) {
-                return null;
+                throw new RuntimeException(e);
             }
         };
     }
@@ -84,5 +85,35 @@ class ReflectionUtils {
                 .findFirst()
                 .map(clientInterface -> clientInterface.getAnnotation(ReSTClient.class))
                 .orElseThrow(() -> new AnnotationNotFoundException(ReSTClient.class));
+    }
+
+    public static <O> Class<O> getResponseClass(final ReSTOperationMapping operationMapping)
+    {
+        if (Void.class.equals(operationMapping.exceptionClass())) return (Class<O>) operationMapping.responseClass();
+        return operationMapping.exceptionClass();
+    }
+
+    static String stringify(ReSTClient reSTClient) {
+        return reSTClient.protocol().toString() +
+                reSTClient.contextPath() + "\n" +
+                stringify(reSTClient.defaultMappings());
+    }
+
+    static String stringify(ReSTOperationMapping[] reSTOperationMappings) {
+        StringBuilder builder = new StringBuilder();
+        Arrays.stream(reSTOperationMappings)
+                .forEach(mapping -> builder.append(stringify(mapping)));
+        return builder.toString();
+    }
+
+    static String stringify(ReSTOperationMapping mapping) {
+        return mapping.statusCode() + mapping.responseClass().getSimpleName();
+    }
+
+    static <I> Class<I> getClassOrNull(I request) {
+        if (request == null) {
+            return null;
+        }
+        return (Class<I>) request.getClass();
     }
 }

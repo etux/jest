@@ -4,7 +4,8 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 
 import com.google.common.base.Preconditions;
-import org.devera.jest.annotations.ReSTOperation;
+import org.devera.jest.client.invocations.JeSTInvocation;
+import org.devera.jest.client.invocations.JeSTInvocationFactory;
 
 public class JeSTClient {
 
@@ -35,39 +36,6 @@ public class JeSTClient {
 
     private <I, O> JeSTInvocation<I, O> createInvocation(final String methodName, final I request) {
         return JeSTInvocationFactory.create(methodName, request, configuration, clientInstance, jaxrsClient);
-    }
-
-    private static class JeSTInvocationFactory {
-        private static <I, O> JeSTInvocation<I, O> create(
-                String methodName,
-                I request,
-                Configuration configuration,
-                Object clientInstance,
-                Client jaxrsClient) {
-
-            ReSTOperation operation = ReflectionUtils.findReSTOperation(clientInstance, methodName, request.getClass());
-
-            switch(operation.method()) {
-                case GET:
-                    return new JeSTGetInvocation<>(
-                            configuration,
-                            clientInstance,
-                            methodName,
-                            request,
-                            jaxrsClient
-                    );
-                case POST:
-                    return new JeSTPostInvocation<>(
-                            configuration,
-                            clientInstance,
-                            methodName,
-                            request,
-                            jaxrsClient
-                    );
-                default:
-                    throw new IllegalArgumentException("Method " + operation.method() + " not supported.");
-            }
-        }
     }
 
 

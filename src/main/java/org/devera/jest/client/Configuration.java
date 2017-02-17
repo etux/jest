@@ -25,7 +25,7 @@ public class Configuration {
         this.contextPath = contextPath;
     }
 
-    final protected String getApplicationUrl(final Object client) {
+    final public String getApplicationUrl(final Object client) {
         final ReSTClient reSTClient = client.getClass().getInterfaces()[0].getAnnotation(ReSTClient.class);
         return new StringBuilder()
                 .append(Optional.ofNullable(protocol).orElse(reSTClient.protocol().name()))

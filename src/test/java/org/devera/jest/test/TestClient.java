@@ -41,7 +41,7 @@ public interface TestClient {
                     @ReSTOperationMapping(statusCode = 409, responseClass = ConflictResponse.class)
             }
     )
-    Response simplePutOperationWithOwnMappings();
+    Response simplePutOperationWithOwnMappings(PutRequest request);
 
 
     @ReSTOperation(

@@ -8,6 +8,7 @@ import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
 
 import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
@@ -116,6 +117,11 @@ public class TestClientPrototypeTest {
 
         Response response = new TestClientPrototype(configuration).simplePostOperationWithOwnMappings(request);
 
+        assertThat(
+                response,
+                is(nullValue())
+        );
+
         mockServerClient.verify(
                 request()
                     .withMethod("POST")
@@ -152,6 +158,60 @@ public class TestClientPrototypeTest {
                     .withHeader("Content-Type", "application/json")
                     .withBody("{\"input\":\"input\"}")
         );
+    }
+
+    @Test
+    public void simpleDeleteOperation_should_return_ok() {
+
+        mockServerClient.when(
+                request()
+                .withMethod("DELETE")
+                .withPath("/")
+        ).respond(
+                response()
+                .withStatusCode(200)
+        );
+
+        new TestClientPrototype(configuration)
+                .simpleDeleteOperation();
+
+        mockServerClient.verify(
+                request()
+                    .withMethod("DELETE")
+                    .withPath("/")
+        );
+    }
+
+    @Test
+    public void simplePutOperation_should_return_ok() {
+
+        mockServerClient.when(
+                request()
+                .withMethod("PUT")
+                .withPath("/")
+        ).respond(
+                response()
+                .withStatusCode(200)
+        );
+
+        final PutRequest request = new PutRequest();
+        request.setBody("body");
+
+        Response response = new TestClientPrototype(configuration)
+                .simplePutOperationWithOwnMappings(request);
+
+        assertThat(
+                response,
+                is(nullValue())
+        );
+
+        mockServerClient.verify(
+                request()
+                .withMethod("PUT")
+                .withPath("/")
+                .withBody("{\"body\":\"body\"}")
+        );
+
     }
 
 }

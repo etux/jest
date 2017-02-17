@@ -29,8 +29,8 @@ public class TestClientPrototype implements TestClient {
     }
 
     @Override
-    public Response simplePutOperationWithOwnMappings() {
-        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithOwnMappings", null);
+    public Response simplePutOperationWithOwnMappings(PutRequest request) {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithOwnMappings", request);
         return result.getPayload();
     }
 
