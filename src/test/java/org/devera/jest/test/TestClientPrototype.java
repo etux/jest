@@ -39,4 +39,10 @@ public class TestClientPrototype implements TestClient {
         final JeSTResult<Response> result = jeSTClient.invoke("simpleDeleteOperation", null);
         return result.getPayload();
     }
+
+    @Override
+    public Response simpleOptionsOperation() {
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleOptionsOperation", null);
+        return result.getPayload();
+    }
 }

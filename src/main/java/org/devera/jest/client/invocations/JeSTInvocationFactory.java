@@ -1,5 +1,7 @@
 package org.devera.jest.client.invocations;
 
+import java.lang.reflect.Method;
+
 import javax.ws.rs.client.Client;
 
 import org.devera.jest.annotations.ReSTOperation;
@@ -17,7 +19,8 @@ public final class JeSTInvocationFactory {
             Object clientInstance,
             Client jaxrsClient) {
 
-        ReSTOperation operation = ReflectionUtils.findReSTOperation(clientInstance, methodName, request);
+        final Method method = ReflectionUtils.findMethod(clientInstance, methodName, request);
+        final ReSTOperation operation = ReflectionUtils.findReSTOperation(clientInstance, methodName, request);
 
         switch(operation.method()) {
             case GET:
@@ -26,7 +29,8 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
-                        request
+                        request,
+                        (Class<O>) method.getReturnType()
                 );
             case POST:
                 return new JeSTPostInvocation<>(
@@ -34,7 +38,8 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
-                        request
+                        request,
+                        (Class<O>) method.getReturnType()
                 );
             case DELETE:
                 return new JeSTDeleteInvocation<>(
@@ -42,7 +47,8 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
-                        request
+                        request,
+                        (Class<O>) method.getReturnType()
                 );
             case PUT:
                 return new JeSTPutInvocation<>(
@@ -50,7 +56,18 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
-                        request
+                        request,
+                        (Class<O>) method.getReturnType()
+                );
+            case OPTIONS:
+                return new JeSTOptionsInvocation<>(
+                        jaxrsClient,
+                        configuration,
+                        clientInstance,
+                        operation,
+                        request,
+                        (Class<O>) method.getReturnType()
+
                 );
             default:
                 throw new IllegalArgumentException("Method " + operation.method() + " not supported.");

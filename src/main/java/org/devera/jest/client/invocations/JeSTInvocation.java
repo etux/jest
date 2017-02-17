@@ -19,6 +19,7 @@ public abstract class JeSTInvocation<I, O> {
     private final Configuration configuration;
     private final Object clientInstance;
     private final ReSTOperation reSTOperation;
+    private final Class<O> responseClass;
 
     final I request;
 
@@ -27,13 +28,15 @@ public abstract class JeSTInvocation<I, O> {
             final Configuration configuration,
             final Object clientInstance,
             final ReSTOperation reSTOperation,
-            final I request
+            final I request,
+            final Class<O> responseClass
     ) {
         this.configuration = configuration;
         this.clientInstance = clientInstance;
         this.reSTOperation = reSTOperation;
         this.request = request;
         this.jaxrsClient = jaxrsClient;
+        this.responseClass = responseClass;
     }
 
 

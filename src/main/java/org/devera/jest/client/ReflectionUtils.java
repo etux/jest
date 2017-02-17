@@ -93,6 +93,13 @@ public final class ReflectionUtils {
         return operationMapping.exceptionClass();
     }
 
+    public static <I> Method findMethod(final Object clientInstance, final String methodName, final I request) {
+        return getClassWithAnnotationStream(clientInstance)
+                    .map(getMethodSafely(methodName, getClassOrNull(request)))
+                    .findFirst()
+                    .orElse(null);
+    }
+
     static String stringify(ReSTClient reSTClient) {
         return reSTClient.protocol().toString() +
                 reSTClient.contextPath() + "\n" +

@@ -15,9 +15,10 @@ public final class JeSTPostInvocation<I,O> extends JeSTInvocation<I, O> {
             final Configuration configuration,
             final Object clientInstance,
             final ReSTOperation reSTOperation,
-            final I request)
+            final I request,
+            final Class<O> returnType)
     {
-        super(jaxrsClient, configuration, clientInstance, reSTOperation, request);
+        super(jaxrsClient, configuration, clientInstance, reSTOperation, request, returnType);
     }
 
     @Override

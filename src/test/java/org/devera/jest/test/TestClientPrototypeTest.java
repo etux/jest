@@ -214,4 +214,26 @@ public class TestClientPrototypeTest {
 
     }
 
+    @Test
+    public void simpleOptionsOperation_should_return_ok() {
+
+        mockServerClient.when(
+                request()
+                .withMethod("OPTIONS")
+                .withPath("/")
+        ).respond(
+                response()
+                .withStatusCode(200)
+        );
+
+        new TestClientPrototype(configuration).simpleOptionsOperation();
+
+        mockServerClient.verify(
+                request()
+                .withMethod("OPTIONS")
+                .withPath("/")
+        );
+    }
+
+
 }

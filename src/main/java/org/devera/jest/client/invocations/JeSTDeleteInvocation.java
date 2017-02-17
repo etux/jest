@@ -9,13 +9,13 @@ import org.devera.jest.client.Configuration;
 public class JeSTDeleteInvocation<I,O> extends JeSTInvocation<I,O> {
 
     JeSTDeleteInvocation(
-            Client jaxrsClient,
-            Configuration configuration,
-            Object clientInstance,
-            ReSTOperation reSTOperation,
-            I request
-    ) {
-        super(jaxrsClient, configuration, clientInstance, reSTOperation, request);
+            final Client jaxrsClient,
+            final Configuration configuration,
+            final Object clientInstance,
+            final ReSTOperation reSTOperation,
+            final I request,
+            final Class<O> returnType) {
+        super(jaxrsClient, configuration, clientInstance, reSTOperation, request, returnType);
     }
 
     @Override

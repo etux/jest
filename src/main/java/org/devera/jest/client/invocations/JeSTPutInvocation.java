@@ -10,17 +10,18 @@ import org.devera.jest.client.Configuration;
 
 public class JeSTPutInvocation<I, O> extends JeSTInvocation<I, O> {
 
-    public JeSTPutInvocation(Client jaxrsClient,
-                             Configuration configuration,
-                             Object clientInstance,
-                             ReSTOperation reSTOperation,
-                             I request)
+    JeSTPutInvocation(final Client jaxrsClient,
+                             final Configuration configuration,
+                             final Object clientInstance,
+                             final ReSTOperation reSTOperation,
+                             final I request,
+                             final Class<O> responseClass)
     {
-        super(jaxrsClient, configuration, clientInstance, reSTOperation, request);
+        super(jaxrsClient, configuration, clientInstance, reSTOperation, request, responseClass);
     }
 
     @Override
-    protected Invocation prepareInvocation() {
+    protected final Invocation prepareInvocation() {
         return getApplicationWebTarget().request().buildPut(Entity.entity(request, MediaType.APPLICATION_JSON));
     }
 }

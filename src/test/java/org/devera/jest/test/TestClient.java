@@ -7,6 +7,7 @@ import org.devera.jest.annotations.ReSTOperationMapping;
 import org.devera.jest.annotations.Response;
 
 import static org.devera.jest.annotations.ReSTOperation.Operations.DELETE;
+import static org.devera.jest.annotations.ReSTOperation.Operations.OPTIONS;
 import static org.devera.jest.annotations.ReSTOperation.Operations.POST;
 import static org.devera.jest.annotations.ReSTOperation.Operations.PUT;
 
@@ -48,4 +49,9 @@ public interface TestClient {
             method = DELETE
     )
     Response simpleDeleteOperation();
+
+    @ReSTOperation(
+            method = OPTIONS
+    )
+    Response simpleOptionsOperation();
 }
