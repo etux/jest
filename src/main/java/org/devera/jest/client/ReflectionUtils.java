@@ -1,11 +1,17 @@
 package org.devera.jest.client;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.ws.rs.core.Response;
@@ -122,5 +128,56 @@ public final class ReflectionUtils {
             return null;
         }
         return (Class<I>) request.getClass();
+    }
+
+    public static Map<String, ?> getQueryParams(Object request)
+    {
+        return
+            Arrays.stream(request.getClass().getDeclaredFields())
+                .filter(isNotNull(request))
+                .collect(
+                    Collectors.toMap(
+                        Field::getName,
+                        field -> getValue(request, field))
+                );
+    }
+
+    private static Predicate<Field> isNotNull(Object request)
+    {
+        return v -> getValue(request, v) != null;
+    }
+
+    private static <T> T getValue(final Object object, final Field f) {
+        return
+            Optional.ofNullable((T) invokeGetterMethod(object, f))
+                .map(v -> getCollectionOrSingle(v))
+                .orElse(null);
+    }
+
+    private static <T> T getCollectionOrSingle(T v)
+    {
+        return
+            v.getClass().isInstance(Collection.class) ?
+                (T) Arrays.asList(Collection.class.cast(v).toArray()) :
+                v;
+    }
+
+    private static Object invokeGetterMethod(Object object, Field f)
+    {
+        try {
+            return getGetterMethodMethod(object, f).invoke(object);
+        } catch(IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static Method getGetterMethodMethod(Object object, Field f) throws NoSuchMethodException
+    {
+        return object.getClass().getMethod(getGetterMethodName(f));
+    }
+
+    private static String getGetterMethodName(Field f)
+    {
+        return "get" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1);
     }
 }

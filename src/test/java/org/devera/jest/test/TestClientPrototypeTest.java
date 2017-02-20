@@ -64,6 +64,41 @@ public class TestClientPrototypeTest {
         );
     }
 
+    @Test
+    public void simpleGetOperation_with_query_params_should_marshal_appropriate_mapping() throws Exception {
+
+        mockServerClient.when(
+            request()
+                .withMethod("GET")
+                .withPath("/")
+        ).respond(
+            response()
+                .withBody(
+                    "{\"message\": \"This works\"}"
+                )
+                .withHeader("Content-Type", "application/json")
+                .withStatusCode(200)
+        );
+
+        GetRequestWithParams request = new GetRequestWithParams();
+        request.setParam("value");
+
+        final TestClientPrototype testClientPrototype = new TestClientPrototype(configuration);
+        Response response = testClientPrototype.simpleGetOperationWithQueryParams(request);
+
+        mockServerClient.verify(
+            request()
+                .withMethod("GET")
+                .withPath("/")
+                .withQueryStringParameter("param", "value")
+        );
+
+        assertThat(
+            OkTestResponse.class.cast(response).getMessage(),
+            is("This works")
+        );
+    }
+
 
     @Test
     public void simpleGetOperation_with_system_error_should_marshal_appropriate_mapping() throws Exception {

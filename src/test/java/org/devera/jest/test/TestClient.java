@@ -24,6 +24,9 @@ public interface TestClient {
     @ReSTOperation
     Response simpleGetOperationWithInheritsReSTClientDefaultMappings(GetRequest request);
 
+    @ReSTOperation
+    Response simpleGetOperationWithQueryParams(GetRequestWithParams request);
+
 
     @ReSTOperation(
             path = "/",
