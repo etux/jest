@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module external.linked.project.id="jest:main" external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="GRADLE" external.system.module.group="org.devera.jest" external.system.module.type="sourceSet" external.system.module.version="1.0-SNAPSHOT" type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_8" inherit-compiler-output="false">
+    <output url="file://$MODULE_DIR$/../../build/classes/main" />
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../../src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../../src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Gradle: org.glassfish.jersey.core:jersey-client:2.5.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.8.6" level="project" />
+    <orderEntry type="library" name="Gradle: org.glassfish.jersey.core:jersey-common:2.5.1" level="project" />
+    <orderEntry type="library" name="Gradle: javax.ws.rs:javax.ws.rs-api:2.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.guava:guava:14.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.glassfish.hk2:hk2-api:2.2.0-b21" level="project" />
+    <orderEntry type="library" name="Gradle: org.glassfish.hk2.external:javax.inject:2.2.0-b21" level="project" />
+    <orderEntry type="library" name="Gradle: org.glassfish.hk2:hk2-locator:2.2.0-b21" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.8.6" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-core:2.8.6" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.8.6" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.8.6" level="project" />
+    <orderEntry type="library" name="Gradle: javax.annotation:javax.annotation-api:1.2" level="project" />
+    <orderEntry type="library" name="Gradle: org.glassfish.hk2:osgi-resource-locator:1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.glassfish.hk2:hk2-utils:2.2.0-b21" level="project" />
+    <orderEntry type="library" name="Gradle: org.glassfish.hk2.external:asm-all-repackaged:2.2.0-b21" level="project" />
+    <orderEntry type="library" name="Gradle: org.glassfish.hk2.external:cglib:2.2.0-b21" level="project" />
+    <orderEntry type="library" name="Gradle: com.fasterxml.jackson.core:jackson-annotations:2.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: javax.inject:javax.inject:1" level="project" />
+  </component>
+</module>

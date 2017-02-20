@@ -18,3 +18,5 @@ gradlew*
 build/
 
 out/
+
+.idea
