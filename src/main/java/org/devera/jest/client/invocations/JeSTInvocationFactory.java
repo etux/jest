@@ -1,11 +1,13 @@
 package org.devera.jest.client.invocations;
 
 import java.lang.reflect.Method;
-
+import java.util.Map;
 import javax.ws.rs.client.Client;
 
+import javafx.scene.effect.Reflection;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.client.Configuration;
+import org.devera.jest.client.NamedParam;
 import org.devera.jest.client.ReflectionUtils;
 
 public final class JeSTInvocationFactory {
@@ -13,14 +15,17 @@ public final class JeSTInvocationFactory {
     private JeSTInvocationFactory() {}
 
     public static <I, O> JeSTInvocation<I, O> create(
-            String methodName,
-            I request,
-            Configuration configuration,
-            Object clientInstance,
-            Client jaxrsClient) {
+        final Client jaxrsClient,
+        final Configuration configuration,
+        final Object clientInstance,
+        final String methodName,
+        final I request,
+        final NamedParam... params)
+    {
 
-        final Method method = ReflectionUtils.findMethod(clientInstance, methodName, request);
+        final Method method = ReflectionUtils.findMethod(clientInstance, methodName);
         final ReSTOperation operation = ReflectionUtils.findReSTOperation(clientInstance, methodName, request);
+        final Map<String, Object> pathParams = ReflectionUtils.getPathParams(params);
 
         switch(operation.method()) {
             case GET:
@@ -29,6 +34,7 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
+                        pathParams,
                         request,
                         (Class<O>) method.getReturnType()
                 );
@@ -38,6 +44,7 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
+                        pathParams,
                         request,
                         (Class<O>) method.getReturnType()
                 );
@@ -47,6 +54,7 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
+                        pathParams,
                         request,
                         (Class<O>) method.getReturnType()
                 );
@@ -56,6 +64,7 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
+                        pathParams,
                         request,
                         (Class<O>) method.getReturnType()
                 );
@@ -65,6 +74,7 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
+                        pathParams,
                         request,
                         (Class<O>) method.getReturnType()
 

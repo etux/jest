@@ -1,8 +1,10 @@
-package org.devera.jest.test;
+package org.devera.jest.test.client;
 
+import org.devera.jest.annotations.ReSTPathParam;
 import org.devera.jest.annotations.Response;
 import org.devera.jest.client.JeSTClient;
 import org.devera.jest.client.JeSTResult;
+import org.devera.jest.client.NamedParam;
 
 public class TestClientPrototype implements TestClient {
 
@@ -43,6 +45,20 @@ public class TestClientPrototype implements TestClient {
     }
 
     @Override
+    public Response simplePostOperationWithOwnMappingsAndPathParamInSignature(PostRequest request, @ReSTPathParam String pathName)
+    {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInSignature", request, new NamedParam("pathName", pathName));
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simplePostOperationWithOwnMappingsAndPathParamInRequest(PostRequestWithPathParam request)
+    {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInRequest", request);
+        return result.getPayload();
+    }
+
+    @Override
     public Response simplePutOperationWithOwnMappings(PutRequest request) {
         final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithOwnMappings", request);
         return result.getPayload();
@@ -52,6 +68,16 @@ public class TestClientPrototype implements TestClient {
     public Response simplePutOperationWithPathParamAndOwnMappings(PutRequestWithPathParam request)
     {
         final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithPathParamAndOwnMappings", request);
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simplePutOperationWithPathParamOnSignature(PutRequest request, String identifier)
+    {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithPathParamOnSignature",
+            request,
+            new NamedParam("identifier", identifier));
+
         return result.getPayload();
     }
 

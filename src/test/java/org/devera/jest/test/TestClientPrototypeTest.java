@@ -1,6 +1,18 @@
 package org.devera.jest.test;
 
 import org.devera.jest.annotations.Response;
+import org.devera.jest.test.client.GetRequest;
+import org.devera.jest.test.client.GetRequestWithParams;
+import org.devera.jest.test.client.GetRequestWithPathParams;
+import org.devera.jest.test.client.NotFoundException;
+import org.devera.jest.test.client.OkTestResponse;
+import org.devera.jest.test.client.PostRequest;
+import org.devera.jest.test.client.PostRequestWithPathParam;
+import org.devera.jest.test.client.PutRequest;
+import org.devera.jest.test.client.PutRequestWithPathParam;
+import org.devera.jest.test.client.SystemErrorResponse;
+import org.devera.jest.test.client.TestClientConfiguration;
+import org.devera.jest.test.client.TestClientPrototype;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,8 +31,8 @@ public class TestClientPrototypeTest {
 
     @Rule
     public MockServerRule mockServerRule = new MockServerRule(this);
-
     private MockServerClient mockServerClient;
+
     private TestClientConfiguration configuration;
 
     @Before
@@ -232,6 +244,63 @@ public class TestClientPrototypeTest {
     }
 
     @Test
+    public void simplePostOperation_with_pathParam_should_return_ok() {
+
+        mockServerClient.when(
+            request()
+                .withMethod("POST")
+                .withPath("/pathValue")
+                .withHeader("Content-Type", "application/json")
+        ).respond(
+            response()
+                .withHeader("Content-Type", "application/json")
+                .withStatusCode(200)
+        );
+
+        PostRequest request = new PostRequest();
+        request.setInput("input");
+
+        new TestClientPrototype(configuration).simplePostOperationWithOwnMappingsAndPathParamInSignature(request, "pathValue");
+
+        mockServerClient.verify(
+            request()
+                .withMethod("POST")
+                .withPath("/pathValue")
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"input\":\"input\"}")
+        );
+    }
+
+    @Test
+    public void simplePostOperation_with_pathParamOnRequest_should_return_ok() {
+
+        mockServerClient.when(
+            request()
+                .withMethod("POST")
+                .withPath("/pathValue")
+                .withHeader("Content-Type", "application/json")
+        ).respond(
+            response()
+                .withHeader("Content-Type", "application/json")
+                .withStatusCode(200)
+        );
+
+        PostRequestWithPathParam request = new PostRequestWithPathParam();
+        request.setPathName("pathValue");
+        request.setBody("body");
+
+        new TestClientPrototype(configuration).simplePostOperationWithOwnMappingsAndPathParamInRequest(request);
+
+        mockServerClient.verify(
+            request()
+                .withMethod("POST")
+                .withPath("/pathValue")
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"body\":\"body\"}")
+        );
+    }
+
+    @Test
     public void simpleDeleteOperation_should_return_ok() {
 
         mockServerClient.when(
@@ -303,6 +372,38 @@ public class TestClientPrototypeTest {
 
         Response response = new TestClientPrototype(configuration)
             .simplePutOperationWithPathParamAndOwnMappings(request);
+
+        assertThat(
+            response,
+            is(nullValue())
+        );
+
+        mockServerClient.verify(
+            request()
+                .withMethod("PUT")
+                .withPath("/" + identifier.toString())
+                .withBody("{\"body\":\"body\"}")
+        );
+
+    }
+
+    @Test
+    public void simplePutOperation_with_pathParam_on_signature_should_return_ok() {
+        UUID identifier = UUID.randomUUID();
+        mockServerClient.when(
+            request()
+                .withMethod("PUT")
+                .withPath("/" + identifier.toString())
+        ).respond(
+            response()
+                .withStatusCode(200)
+        );
+
+        final PutRequest request = new PutRequest();
+        request.setBody("body");
+
+        Response response = new TestClientPrototype(configuration)
+            .simplePutOperationWithPathParamOnSignature(request, identifier.toString());
 
         assertThat(
             response,

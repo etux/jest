@@ -6,7 +6,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface JeSTQueryParam
+@Target({
+    ElementType.FIELD,
+    ElementType.METHOD,
+    ElementType.PARAMETER
+})
+public @interface ReSTQueryParam
 {
 }

@@ -1,5 +1,6 @@
-package org.devera.jest.test;
+package org.devera.jest.test.client;
 
+import org.devera.jest.annotations.ReSTPathParam;
 import org.devera.jest.annotations.Protocol;
 import org.devera.jest.annotations.ReSTClient;
 import org.devera.jest.annotations.ReSTOperation;
@@ -43,6 +44,27 @@ public interface TestClient {
     Response simplePostOperationWithOwnMappings(PostRequest request);
 
     @ReSTOperation(
+        path = "/{pathName}",
+        method = POST,
+        mappings = {
+            @ReSTOperationMapping(statusCode = 200, responseClass = OkTestResponse.class),
+            @ReSTOperationMapping(statusCode = 404, exceptionClass = NotFoundException.class)
+        }
+    )
+    Response simplePostOperationWithOwnMappingsAndPathParamInSignature(PostRequest request, @ReSTPathParam String pathName);
+
+
+    @ReSTOperation(
+        path = "/{pathName}",
+        method = POST,
+        mappings = {
+            @ReSTOperationMapping(statusCode = 200, responseClass = OkTestResponse.class),
+            @ReSTOperationMapping(statusCode = 404, exceptionClass = NotFoundException.class)
+        }
+    )
+    Response simplePostOperationWithOwnMappingsAndPathParamInRequest(PostRequestWithPathParam request);
+
+    @ReSTOperation(
             method = PUT,
             mappings = {
                     @ReSTOperationMapping(statusCode = 200, responseClass = OkTestResponse.class),
@@ -60,6 +82,12 @@ public interface TestClient {
         }
     )
     Response simplePutOperationWithPathParamAndOwnMappings(PutRequestWithPathParam request);
+
+    @ReSTOperation(
+        method = PUT,
+        path="/{identifier}"
+    )
+    Response simplePutOperationWithPathParamOnSignature(PutRequest request, @ReSTPathParam String identifier);
 
 
     @ReSTOperation(

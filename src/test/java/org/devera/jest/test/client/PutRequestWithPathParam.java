@@ -1,13 +1,13 @@
-package org.devera.jest.test;
+package org.devera.jest.test.client;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.devera.jest.annotations.JeSTPathParam;
+import org.devera.jest.annotations.ReSTPathParam;
 
 import java.util.UUID;
 
 public class PutRequestWithPathParam
 {
-    @JeSTPathParam
+    @ReSTPathParam
     @JsonIgnore
     private UUID identifier;
     private String body;

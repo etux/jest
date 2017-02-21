@@ -1,10 +1,10 @@
-package org.devera.jest.test;
+package org.devera.jest.test.client;
 
-import org.devera.jest.annotations.JeSTPathParam;
+import org.devera.jest.annotations.ReSTPathParam;
 
 public class GetRequestWithPathParams
 {
-    @JeSTPathParam
+    @ReSTPathParam
     private String pathParam;
 
     public String getPathParam()

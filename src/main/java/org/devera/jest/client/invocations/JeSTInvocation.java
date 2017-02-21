@@ -10,6 +10,8 @@ import org.devera.jest.annotations.ReSTOperationMapping;
 import org.devera.jest.client.Configuration;
 import org.devera.jest.client.JeSTResult;
 
+import java.util.Map;
+
 import static org.devera.jest.client.ReflectionUtils.findOperationMapping;
 import static org.devera.jest.client.ReflectionUtils.getResponseClass;
 
@@ -19,6 +21,7 @@ public abstract class JeSTInvocation<I, O> {
     private final Configuration configuration;
     private final Object clientInstance;
     private final ReSTOperation reSTOperation;
+    private final Map<String, Object> pathParams;
     private final Class<O> responseClass;
 
     final I request;
@@ -28,12 +31,14 @@ public abstract class JeSTInvocation<I, O> {
             final Configuration configuration,
             final Object clientInstance,
             final ReSTOperation reSTOperation,
+            final Map<String, Object> pathParams,
             final I request,
             final Class<O> responseClass
     ) {
         this.configuration = configuration;
         this.clientInstance = clientInstance;
         this.reSTOperation = reSTOperation;
+        this.pathParams = pathParams;
         this.request = request;
         this.jaxrsClient = jaxrsClient;
         this.responseClass = responseClass;
@@ -49,7 +54,7 @@ public abstract class JeSTInvocation<I, O> {
 
     protected WebTarget resolveWebTarget() {
         return new JeSTTarget(getApplicationWebTarget())
-            .resolvePathParams(request)
+            .resolvePathParams(request, pathParams)
             .resolveQueryParams(request);
     }
 

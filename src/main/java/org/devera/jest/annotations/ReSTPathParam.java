@@ -8,8 +8,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({
     ElementType.FIELD,
-    ElementType.METHOD
+    ElementType.METHOD,
+    ElementType.PARAMETER
 })
-public @interface JeSTPathParam
+public @interface ReSTPathParam
 {
 }

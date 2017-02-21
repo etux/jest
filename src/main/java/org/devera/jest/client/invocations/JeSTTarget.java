@@ -29,13 +29,16 @@ public class JeSTTarget implements WebTarget
         return new JeSTTarget(processedTarget);
     }
 
-    JeSTTarget resolvePathParams(final Object request)
+    JeSTTarget resolvePathParams(final Object request, final Map<String, Object> pathParams)
     {
         WebTarget processedTarget = this.originalWebTarget;
-        final Map<String, ?> pathParams = ReflectionUtils.getPathParams(request);
-        for (String pathParam : pathParams.keySet()) {
-            processedTarget = processedTarget.resolveTemplate(pathParam, pathParams.get(pathParam));
+        final Map<String, Object> pathParamsFromRequest = ReflectionUtils.getPathParams(request);
+        pathParams.forEach(pathParamsFromRequest::put);
+
+        for (String pathParam : pathParamsFromRequest.keySet()) {
+            processedTarget = processedTarget.resolveTemplate(pathParam, pathParamsFromRequest.get(pathParam));
         }
+
         return new JeSTTarget(processedTarget);
     }
 

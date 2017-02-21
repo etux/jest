@@ -1,4 +1,4 @@
-package org.devera.jest.test;
+package org.devera.jest.test.client;
 
 public class OkTestResponse implements TestResponse {
 

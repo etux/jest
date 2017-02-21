@@ -25,17 +25,18 @@ public class JeSTClient {
 
     public <I, O> JeSTResult<O> invoke(
             final String methodName,
-            final I request
+            final I request,
+            final NamedParam... params
     ) {
-        final JeSTResult<O> result = (JeSTResult<O>) createInvocation(methodName, request).invoke();
+        final JeSTResult<O> result = (JeSTResult<O>) createInvocation(methodName, request, params).invoke();
         if (result.isError()) {
             throw result.getException();
         }
         return result;
     }
 
-    private <I, O> JeSTInvocation<I, O> createInvocation(final String methodName, final I request) {
-        return JeSTInvocationFactory.create(methodName, request, configuration, clientInstance, jaxrsClient);
+    private <I, O> JeSTInvocation<I, O> createInvocation(final String methodName, final I request, final NamedParam... params) {
+        return JeSTInvocationFactory.create(jaxrsClient, configuration, clientInstance, methodName, request, params);
     }
 
 
