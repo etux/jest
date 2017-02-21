@@ -25,6 +25,10 @@ public interface TestClient {
     @ReSTOperation
     Response simpleGetOperationWithInheritsReSTClientDefaultMappings(GetRequest request);
 
+    @ReSTOperation(
+        path = "/{pathParam}"
+    )
+    Response simpleGetOperationWithPathParams(GetRequestWithPathParams request);
 
     @ReSTOperation(
             path = "/",
@@ -48,5 +52,11 @@ public interface TestClient {
 ```
 
 Initially, the approach to follow is to use annotation processors to generate the specific code that together with a library that uses reflexion allows the developer to easily introduce ReST Clients on his applications.
+
+## Query parameters
+Currently the implementation allows the use of query parameters in the form of properties of the request object by the use of reflection for get operations. The use of @JeSTQueryParam is optional, in this case.
+
+## Path parameters
+Currently the implementation allows the use of path parameters in the form of properties of the request object by the use of reflection together with @JeSTPathParam annotations.
 
 At the moment the implementation is focused on using Jersey Client 2.x as the web services stack, and it requires Java 8.

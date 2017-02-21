@@ -1,5 +1,7 @@
 package org.devera.jest.client.invocations;
 
+import org.devera.jest.client.ReflectionUtils;
+
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Configuration;
@@ -12,12 +14,30 @@ public class JeSTTarget implements WebTarget
 {
     private final WebTarget originalWebTarget;
 
-    public JeSTTarget(final WebTarget originalWebTarget)
+    JeSTTarget(final WebTarget originalWebTarget)
     {
         this.originalWebTarget = originalWebTarget;
     }
 
+    JeSTTarget resolveQueryParams(final Object request)
+    {
+        WebTarget processedTarget = this.originalWebTarget;
+        final Map<String, ?> queryParams = ReflectionUtils.getQueryParams(request);
+        for (String queryParamName : queryParams.keySet()) {
+            processedTarget = processedTarget.queryParam(queryParamName, queryParams.get(queryParamName));
+        }
+        return new JeSTTarget(processedTarget);
+    }
 
+    JeSTTarget resolvePathParams(final Object request)
+    {
+        WebTarget processedTarget = this.originalWebTarget;
+        final Map<String, ?> pathParams = ReflectionUtils.getPathParams(request);
+        for (String pathParam : pathParams.keySet()) {
+            processedTarget = processedTarget.resolveTemplate(pathParam, pathParams.get(pathParam));
+        }
+        return new JeSTTarget(processedTarget);
+    }
 
     @Override
     public URI getUri()

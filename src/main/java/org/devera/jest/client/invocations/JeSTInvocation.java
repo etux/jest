@@ -47,6 +47,12 @@ public abstract class JeSTInvocation<I, O> {
 
     protected abstract Invocation prepareInvocation();
 
+    protected WebTarget resolveWebTarget() {
+        return new JeSTTarget(getApplicationWebTarget())
+            .resolvePathParams(request)
+            .resolveQueryParams(request);
+    }
+
     final WebTarget getApplicationWebTarget() {
         return jaxrsClient.target(configuration.getApplicationUrl(clientInstance)).path(reSTOperation.path());
     }

@@ -22,6 +22,6 @@ public class JeSTPutInvocation<I, O> extends JeSTInvocation<I, O> {
 
     @Override
     protected final Invocation prepareInvocation() {
-        return getApplicationWebTarget().request().buildPut(Entity.entity(request, MediaType.APPLICATION_JSON));
+        return resolveWebTarget().request().buildPut(Entity.entity(request, MediaType.APPLICATION_JSON));
     }
 }

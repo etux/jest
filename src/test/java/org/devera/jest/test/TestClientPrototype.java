@@ -49,6 +49,13 @@ public class TestClientPrototype implements TestClient {
     }
 
     @Override
+    public Response simplePutOperationWithPathParamAndOwnMappings(PutRequestWithPathParam request)
+    {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithPathParamAndOwnMappings", request);
+        return result.getPayload();
+    }
+
+    @Override
     public Response simpleDeleteOperation() {
         final JeSTResult<Response> result = jeSTClient.invoke("simpleDeleteOperation", null);
         return result.getPayload();

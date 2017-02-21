@@ -23,7 +23,7 @@ public final class JeSTPostInvocation<I,O> extends JeSTInvocation<I, O> {
 
     @Override
     protected final Invocation prepareInvocation() {
-        return getApplicationWebTarget()
+        return resolveWebTarget()
                 .request()
                 .buildPost(Entity.entity(request, MediaType.APPLICATION_JSON));
     }

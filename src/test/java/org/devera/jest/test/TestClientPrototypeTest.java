@@ -7,6 +7,8 @@ import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
 
+import java.util.UUID;
+
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
@@ -278,6 +280,39 @@ public class TestClientPrototypeTest {
                 request()
                 .withMethod("PUT")
                 .withPath("/")
+                .withBody("{\"body\":\"body\"}")
+        );
+
+    }
+
+    @Test
+    public void simplePutOperation_with_pathParam_should_return_ok() {
+        UUID identifier = UUID.randomUUID();
+        mockServerClient.when(
+            request()
+                .withMethod("PUT")
+                .withPath("/" + identifier.toString())
+        ).respond(
+            response()
+                .withStatusCode(200)
+        );
+
+        final PutRequestWithPathParam request = new PutRequestWithPathParam();
+        request.setIdentifier(identifier);
+        request.setBody("body");
+
+        Response response = new TestClientPrototype(configuration)
+            .simplePutOperationWithPathParamAndOwnMappings(request);
+
+        assertThat(
+            response,
+            is(nullValue())
+        );
+
+        mockServerClient.verify(
+            request()
+                .withMethod("PUT")
+                .withPath("/" + identifier.toString())
                 .withBody("{\"body\":\"body\"}")
         );
 

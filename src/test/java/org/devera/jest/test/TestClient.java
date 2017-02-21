@@ -51,6 +51,16 @@ public interface TestClient {
     )
     Response simplePutOperationWithOwnMappings(PutRequest request);
 
+    @ReSTOperation(
+        method = PUT,
+        path = "/{identifier}",
+        mappings = {
+            @ReSTOperationMapping(statusCode = 200, responseClass = OkTestResponse.class),
+            @ReSTOperationMapping(statusCode = 409, responseClass = ConflictResponse.class)
+        }
+    )
+    Response simplePutOperationWithPathParamAndOwnMappings(PutRequestWithPathParam request);
+
 
     @ReSTOperation(
             method = DELETE
