@@ -17,6 +17,8 @@ import java.util.stream.Stream;
 import javax.ws.rs.core.Response;
 
 import com.google.common.base.Preconditions;
+import org.devera.jest.annotations.JeSTPathParam;
+import org.devera.jest.annotations.JeSTQueryParam;
 import org.devera.jest.annotations.ReSTClient;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
@@ -130,16 +132,40 @@ public final class ReflectionUtils {
         return (Class<I>) request.getClass();
     }
 
+    public static Map<String, ?> getPathParams(Object request) {
+        return
+            Arrays.stream(request.getClass().getDeclaredFields())
+                .filter(isNotNull(request))
+                .filter(isPathParam())
+                .collect(
+                    Collectors.toMap(
+                        Field::getName,
+                        field -> getValue(request, field)
+                    )
+                );
+    }
+
+    private static Predicate<? super Field> isPathParam()
+    {
+        return field -> field.getAnnotation(JeSTPathParam.class) != null;
+    }
+
     public static Map<String, ?> getQueryParams(Object request)
     {
         return
             Arrays.stream(request.getClass().getDeclaredFields())
                 .filter(isNotNull(request))
+                .filter(isQueryParam())
                 .collect(
                     Collectors.toMap(
                         Field::getName,
                         field -> getValue(request, field))
                 );
+    }
+
+    private static Predicate<? super Field> isQueryParam()
+    {
+        return field -> field.getAnnotation(JeSTQueryParam.class) != null || !isPathParam().test(field);
     }
 
     private static Predicate<Field> isNotNull(Object request)

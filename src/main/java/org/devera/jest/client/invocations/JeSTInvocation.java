@@ -48,8 +48,7 @@ public abstract class JeSTInvocation<I, O> {
     protected abstract Invocation prepareInvocation();
 
     final WebTarget getApplicationWebTarget() {
-        return jaxrsClient.target(
-                configuration.getApplicationUrl(clientInstance));
+        return jaxrsClient.target(configuration.getApplicationUrl(clientInstance)).path(reSTOperation.path());
     }
 
     private JeSTResult<O> processResponse(final Response response)

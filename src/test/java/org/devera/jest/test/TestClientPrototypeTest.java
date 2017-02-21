@@ -99,6 +99,40 @@ public class TestClientPrototypeTest {
         );
     }
 
+    @Test
+    public void simpleGetOperation_with_path_params_should_marshal_appropriate_mapping() throws Exception {
+
+        mockServerClient.when(
+            request()
+                .withMethod("GET")
+                .withPath("/pathValue")
+        ).respond(
+            response()
+                .withBody(
+                    "{\"message\": \"This works\"}"
+                )
+                .withHeader("Content-Type", "application/json")
+                .withStatusCode(200)
+        );
+
+        GetRequestWithPathParams request = new GetRequestWithPathParams();
+        request.setPathParam("pathValue");
+
+        final TestClientPrototype testClientPrototype = new TestClientPrototype(configuration);
+        Response response = testClientPrototype.simpleGetOperationWithPathParams(request);
+
+        mockServerClient.verify(
+            request()
+                .withMethod("GET")
+                .withPath("/pathValue")
+        );
+
+        assertThat(
+            OkTestResponse.class.cast(response).getMessage(),
+            is("This works")
+        );
+    }
+
 
     @Test
     public void simpleGetOperation_with_system_error_should_marshal_appropriate_mapping() throws Exception {

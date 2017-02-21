@@ -27,6 +27,10 @@ public interface TestClient {
     @ReSTOperation
     Response simpleGetOperationWithQueryParams(GetRequestWithParams request);
 
+    @ReSTOperation(
+        path = "/{pathParam}"
+    )
+    Response simpleGetOperationWithPathParams(GetRequestWithPathParams request);
 
     @ReSTOperation(
             path = "/",

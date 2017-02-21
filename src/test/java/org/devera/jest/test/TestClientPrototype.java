@@ -30,6 +30,13 @@ public class TestClientPrototype implements TestClient {
     }
 
     @Override
+    public Response simpleGetOperationWithPathParams(GetRequestWithPathParams request)
+    {
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithPathParams", request);
+        return result.getPayload();
+    }
+
+    @Override
     public Response simplePostOperationWithOwnMappings(PostRequest request) {
         final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappings", request);
         return result.getPayload();
