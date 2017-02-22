@@ -7,6 +7,8 @@ task wrapper(type: Wrapper) {
 }
 
 apply plugin: 'java'
+apply plugin: 'checkstyle'
+apply plugin: 'findbugs'
 
 sourceCompatibility = 1.8
 
@@ -28,4 +30,15 @@ test {
     testLogging {
         showStandardStreams = true
     }
+}
+
+checkstyle {
+    toolVersion = "7.5.1"
+}
+
+findbugsMain {
+  reports {
+    xml.enabled = false
+    html.enabled = true
+  }
 }
