@@ -9,10 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface ReSTOperation {
 
-    boolean supportsFilters() default false;
-    boolean supportsPagination() default false;
-    boolean supportsProjectors() default false;
-    boolean isAuthenticated() default false;
     ReSTOperationMapping[] mappings() default {};
 
     String path() default "";

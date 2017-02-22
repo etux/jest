@@ -1,6 +1,7 @@
 package org.devera.jest.test;
 
-import org.devera.jest.annotations.Response;
+import java.util.UUID;
+
 import org.devera.jest.test.client.GetRequest;
 import org.devera.jest.test.client.GetRequestWithParams;
 import org.devera.jest.test.client.GetRequestWithPathParams;
@@ -10,6 +11,7 @@ import org.devera.jest.test.client.PostRequest;
 import org.devera.jest.test.client.PostRequestWithPathParam;
 import org.devera.jest.test.client.PutRequest;
 import org.devera.jest.test.client.PutRequestWithPathParam;
+import org.devera.jest.test.client.Response;
 import org.devera.jest.test.client.SystemErrorResponse;
 import org.devera.jest.test.client.TestClientConfiguration;
 import org.devera.jest.test.client.TestClientPrototype;
@@ -18,8 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
-
-import java.util.UUID;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;

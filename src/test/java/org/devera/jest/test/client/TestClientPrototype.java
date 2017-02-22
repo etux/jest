@@ -1,7 +1,6 @@
 package org.devera.jest.test.client;
 
 import org.devera.jest.annotations.ReSTPathParam;
-import org.devera.jest.annotations.Response;
 import org.devera.jest.client.JeSTClient;
 import org.devera.jest.client.JeSTResult;
 import org.devera.jest.client.NamedParam;

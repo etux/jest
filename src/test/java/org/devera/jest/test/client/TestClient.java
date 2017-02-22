@@ -5,7 +5,6 @@ import org.devera.jest.annotations.Protocol;
 import org.devera.jest.annotations.ReSTClient;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
-import org.devera.jest.annotations.Response;
 
 import static org.devera.jest.annotations.ReSTOperation.Operations.DELETE;
 import static org.devera.jest.annotations.ReSTOperation.Operations.OPTIONS;

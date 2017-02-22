@@ -1,7 +1,5 @@
 package org.devera.jest.test.client;
 
-import org.devera.jest.annotations.Response;
-
 public class SystemErrorResponse implements Response{
 
     private String error;
