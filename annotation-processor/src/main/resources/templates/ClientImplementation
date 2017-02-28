@@ -1,0 +1,94 @@
+<prototype_package>;
+
+import org.devera.jest.annotations.ReSTPathParam;
+import org.devera.jest.client.JeSTClient;
+import org.devera.jest.client.JeSTResult;
+import org.devera.jest.client.NamedParam;
+
+public class <prototype_interface>Impl implements <prototype_interface> {
+
+    private final TestClientConfiguration configuration;
+    private final JeSTClient jeSTClient;
+
+    public TestClientPrototype(final TestClientConfiguration configuration) {
+
+        jeSTClient = new JeSTClient(configuration, this);
+        this.configuration = configuration;
+
+    }
+
+    @Override
+    public Response simpleGetOperationWithInheritsReSTClientDefaultMappings(GetRequest request) {
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithInheritsReSTClientDefaultMappings", request);
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simpleGetOperationWithQueryParams(GetRequestWithParams request)
+    {
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithQueryParams", request);
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simpleGetOperationWithPathParams(GetRequestWithPathParams request)
+    {
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithPathParams", request);
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simplePostOperationWithOwnMappings(PostRequest request) {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappings", request);
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simplePostOperationWithOwnMappingsAndPathParamInSignature(PostRequest request, @ReSTPathParam String pathName)
+    {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInSignature", request, new NamedParam("pathName", pathName));
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simplePostOperationWithOwnMappingsAndPathParamInRequest(PostRequestWithPathParam request)
+    {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInRequest", request);
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simplePutOperationWithOwnMappings(PutRequest request) {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithOwnMappings", request);
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simplePutOperationWithPathParamAndOwnMappings(PutRequestWithPathParam request)
+    {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithPathParamAndOwnMappings", request);
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simplePutOperationWithPathParamOnSignature(PutRequest request, String identifier)
+    {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithPathParamOnSignature",
+            request,
+            new NamedParam("identifier", identifier));
+
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simpleDeleteOperation() {
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleDeleteOperation", null);
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simpleOptionsOperation() {
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleOptionsOperation", null);
+        return result.getPayload();
+    }
+}
