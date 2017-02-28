@@ -93,7 +93,7 @@ public final class ReflectionUtils {
 
     public static <O> Class<O> getResponseClass(final ReSTOperationMapping operationMapping)
     {
-        if (Void.class.equals(operationMapping.exceptionClass())) return (Class<O>) operationMapping.responseClass();
+        if (ReSTOperationMapping.Undefined.class.equals(operationMapping.exceptionClass())) return (Class<O>) operationMapping.responseClass();
         return operationMapping.exceptionClass();
     }
 
