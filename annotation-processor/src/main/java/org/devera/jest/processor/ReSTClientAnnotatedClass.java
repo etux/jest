@@ -19,7 +19,7 @@ public class ReSTClientAnnotatedClass {
     ReSTClientAnnotatedClass(final TypeElement element) {
         this.element = element;
         this.reSTClientAnnotation = element.getAnnotation(ReSTClient.class);
-        this.reSTClientInterface = element.getClass();
+        this.reSTClientInterface = reSTClientAnnotation.annotationType();
         this.operations = getOperations(element);
     }
 
@@ -42,5 +42,13 @@ public class ReSTClientAnnotatedClass {
                 .map(ExecutableElement.class::cast)
                 .map(ReSTOperationAnnotatedMethod::new)
                 .collect(Collectors.toSet());
+    }
+
+    String getClassName() {
+        return reSTClientInterface.getSimpleName();
+    }
+
+    String getPackageName() {
+        return reSTClientInterface.getPackage().getName();
     }
 }
