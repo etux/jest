@@ -36,11 +36,11 @@ public interface TestClient {
             path = "/",
             method = POST,
             mappings = {
-                    @ReSTOperationMapping(statusCode = 200, responseClass = OkTestResponse.class),
+                    @ReSTOperationMapping(statusCode = 200),
                     @ReSTOperationMapping(statusCode = 404, exceptionClass = NotFoundException.class)
             }
     )
-    Response simplePostOperationWithOwnMappings(PostRequest request);
+    OkTestResponse simplePostOperationWithOwnMappings(PostRequest request);
 
     @ReSTOperation(
         path = "/{pathName}",

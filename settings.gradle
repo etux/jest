@@ -2,3 +2,5 @@ rootProject.name = 'jest'
 
 include 'lib'
 include 'annotation-processor'
+include 'sample'
+

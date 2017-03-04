@@ -1,6 +1,5 @@
 package org.devera.jest.test.client;
 
-import org.devera.jest.annotations.ReSTPathParam;
 import org.devera.jest.client.JeSTClient;
 import org.devera.jest.client.JeSTResult;
 import org.devera.jest.client.NamedParam;
@@ -11,10 +10,8 @@ public class TestClientPrototype implements TestClient {
     private final JeSTClient jeSTClient;
 
     public TestClientPrototype(final TestClientConfiguration configuration) {
-
         jeSTClient = new JeSTClient(configuration, this);
         this.configuration = configuration;
-
     }
 
     @Override
@@ -38,13 +35,13 @@ public class TestClientPrototype implements TestClient {
     }
 
     @Override
-    public Response simplePostOperationWithOwnMappings(PostRequest request) {
-        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappings", request);
+    public OkTestResponse simplePostOperationWithOwnMappings(PostRequest request) {
+        final JeSTResult<OkTestResponse> result = jeSTClient.invoke("simplePostOperationWithOwnMappings", request);
         return result.getPayload();
     }
 
     @Override
-    public Response simplePostOperationWithOwnMappingsAndPathParamInSignature(PostRequest request, @ReSTPathParam String pathName)
+    public Response simplePostOperationWithOwnMappingsAndPathParamInSignature(PostRequest request, String pathName)
     {
         final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInSignature", request, new NamedParam("pathName", pathName));
         return result.getPayload();

@@ -10,6 +10,10 @@ import java.lang.annotation.Target;
 public @interface ReSTOperationMapping {
 
     int statusCode() default 200;
-    Class responseClass() default Void.class;
-    Class exceptionClass() default Void.class;
+    Class responseClass() default Undefined.class;
+    Class exceptionClass() default Undefined.class;
+
+    class Undefined {
+        private Undefined(){}
+    }
 }
