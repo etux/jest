@@ -9,6 +9,7 @@ import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
 import org.devera.jest.client.Configuration;
 import org.devera.jest.client.JeSTResult;
+import org.devera.jest.client.ReflectionUtils;
 
 import java.util.Map;
 
@@ -52,7 +53,7 @@ public abstract class JeSTInvocation<I, O> {
 
     protected abstract Invocation prepareInvocation();
 
-    protected WebTarget resolveWebTarget() {
+    final WebTarget resolveWebTarget() {
         return new JeSTTarget(getApplicationWebTarget())
             .resolvePathParams(request, pathParams)
             .resolveQueryParams(request);
@@ -67,5 +68,13 @@ public abstract class JeSTInvocation<I, O> {
         final ReSTOperationMapping operationMapping = findOperationMapping(clientInstance, reSTOperation, response);
         final Class<O> responseClass = getResponseClass(operationMapping);
         return new JeSTResult<>(responseClass, response.readEntity(responseClass));
+    }
+
+    private Class<O> getResponseClass(final ReSTOperationMapping operationMapping) {
+        final Class<O> operationMappingResponseClass = ReflectionUtils.getResponseClass(operationMapping);
+        if (ReSTOperationMapping.Undefined.class.equals(operationMappingResponseClass)) {
+            return this.responseClass;
+        }
+        return operationMappingResponseClass;
     }
 }
