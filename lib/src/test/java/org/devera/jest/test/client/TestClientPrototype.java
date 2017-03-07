@@ -16,54 +16,54 @@ public class TestClientPrototype implements TestClient {
 
     @Override
     public Response simpleGetOperationWithInheritsReSTClientDefaultMappings(GetRequest request) {
-        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithInheritsReSTClientDefaultMappings", request);
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithInheritsReSTClientDefaultMappings", request, Response.class);
         return result.getPayload();
     }
 
     @Override
     public Response simpleGetOperationWithQueryParams(GetRequestWithParams request)
     {
-        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithQueryParams", request);
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithQueryParams", request, Response.class);
         return result.getPayload();
     }
 
     @Override
     public Response simpleGetOperationWithPathParams(GetRequestWithPathParams request)
     {
-        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithPathParams", request);
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithPathParams", request, Response.class);
         return result.getPayload();
     }
 
     @Override
     public OkTestResponse simplePostOperationWithOwnMappings(PostRequest request) {
-        final JeSTResult<OkTestResponse> result = jeSTClient.invoke("simplePostOperationWithOwnMappings", request);
+        final JeSTResult<OkTestResponse> result = jeSTClient.invoke("simplePostOperationWithOwnMappings", request, OkTestResponse.class);
         return result.getPayload();
     }
 
     @Override
     public Response simplePostOperationWithOwnMappingsAndPathParamInSignature(PostRequest request, String pathName)
     {
-        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInSignature", request, new NamedParam("pathName", pathName));
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInSignature", request, Response.class, new NamedParam("pathName", pathName));
         return result.getPayload();
     }
 
     @Override
     public Response simplePostOperationWithOwnMappingsAndPathParamInRequest(PostRequestWithPathParam request)
     {
-        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInRequest", request);
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInRequest", request, Response.class);
         return result.getPayload();
     }
 
     @Override
     public Response simplePutOperationWithOwnMappings(PutRequest request) {
-        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithOwnMappings", request);
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithOwnMappings", request, Response.class);
         return result.getPayload();
     }
 
     @Override
     public Response simplePutOperationWithPathParamAndOwnMappings(PutRequestWithPathParam request)
     {
-        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithPathParamAndOwnMappings", request);
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithPathParamAndOwnMappings", request, Response.class);
         return result.getPayload();
     }
 
@@ -72,6 +72,7 @@ public class TestClientPrototype implements TestClient {
     {
         final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithPathParamOnSignature",
             request,
+            Response.class,
             new NamedParam("identifier", identifier));
 
         return result.getPayload();
@@ -79,13 +80,13 @@ public class TestClientPrototype implements TestClient {
 
     @Override
     public Response simpleDeleteOperation() {
-        final JeSTResult<Response> result = jeSTClient.invoke("simpleDeleteOperation", null);
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleDeleteOperation", null, Response.class);
         return result.getPayload();
     }
 
     @Override
     public Response simpleOptionsOperation() {
-        final JeSTResult<Response> result = jeSTClient.invoke("simpleOptionsOperation", null);
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleOptionsOperation", null, Response.class);
         return result.getPayload();
     }
 }
