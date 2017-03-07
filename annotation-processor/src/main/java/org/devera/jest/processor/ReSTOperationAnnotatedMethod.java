@@ -1,52 +1,41 @@
 package org.devera.jest.processor;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.type.TypeMirror;
 
 import org.devera.jest.annotations.ReSTOperation;
-import org.devera.jest.annotations.ReSTOperationMapping;
 
 class ReSTOperationAnnotatedMethod {
 
     private final ExecutableElement element;
     private final ReSTOperation annotation;
-    private final Map<Integer, ReSTOperationMapping> mappings;
 
     ReSTOperationAnnotatedMethod(final ExecutableElement element) {
         this.element = element;
         this.annotation = element.getAnnotation(ReSTOperation.class);
-        mappings = getMappings(element);
     }
 
-    private Map<Integer, ReSTOperationMapping> getMappings(final ExecutableElement element) {
-        return Arrays.stream(element.getAnnotation(ReSTOperation.class).mappings()).collect(Collectors.toMap(
-                ReSTOperationMapping::statusCode,
-                annotation -> annotation
-        ));
-    }
-
-    public String getOperationMethodName() {
+    String getOperationMethodName() {
         return this.element.getSimpleName().toString();
     }
 
-    public List<Parameter> getArgumentMapNameAndType() {
-        return element.getParameters().stream().map(
+    List<Parameter> getArgumentMapNameAndType() {
+        return element.getParameters().stream()
+            .map(
                 typeParameter -> new Parameter(
                         typeParameter.getSimpleName().toString(),
                         typeParameter.asType())
-                ).collect(Collectors.toList());
+            ).collect(Collectors.toList());
     }
 
-    public ReSTOperation getAnnotation() {
+    ReSTOperation getAnnotation() {
         return this.annotation;
     }
 
-    public TypeMirror getReturnType() {
+    TypeMirror getReturnType() {
         return element.getReturnType();
     }
 
@@ -60,11 +49,11 @@ class ReSTOperationAnnotatedMethod {
             this.typeMirror = typeMirror;
         }
 
-        public TypeMirror getTypeMirror() {
+        TypeMirror getTypeMirror() {
             return typeMirror;
         }
 
-        public String getName() {
+        String getName() {
             return name;
         }
 

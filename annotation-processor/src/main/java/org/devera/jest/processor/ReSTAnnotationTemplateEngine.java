@@ -18,6 +18,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
 
 import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -130,11 +131,32 @@ class ReSTAnnotationTemplateEngine {
     }
 
     private String getInvocationParameters(final ReSTOperationAnnotatedMethod operation ) {
-        if (operation.getArgumentMapNameAndType().isEmpty()) return "null";
-        return operation.getArgumentMapNameAndType()
+        final Stream.Builder<String> builder = Stream.builder();
+
+        builder
+            .add(getRequestInvocationParameter(operation))
+            .add(getResponseInvocationParameter(operation));
+
+
+
+        operation.getArgumentMapNameAndType()
                 .stream()
+                .skip(1)
                 .map(parameter -> getArgumentAsString(parameter, operation))
-                .collect(Collectors.joining(", "));
+                .forEach(builder::add);
+
+        return builder
+            .build()
+            .collect(Collectors.joining(", "));
+    }
+
+    private String getRequestInvocationParameter(final ReSTOperationAnnotatedMethod operation) {
+        if (operation.getArgumentMapNameAndType().isEmpty()) return "null";
+        return operation.getArgumentMapNameAndType().get(0).getName();
+    }
+
+    private String getResponseInvocationParameter(final ReSTOperationAnnotatedMethod operation) {
+        return CodeBlock.of("$T.class", TypeName.get(operation.getReturnType())).toString();
     }
 
     private String getArgumentAsString(ReSTOperationAnnotatedMethod.Parameter parameter, ReSTOperationAnnotatedMethod method) {
@@ -159,7 +181,7 @@ class ReSTAnnotationTemplateEngine {
                                 builder.addMember(
                                         "mappings",
                                         "$L",
-                                        getReSOperationMappingAnnotationSpec(mapping)
+                                        getReSTOperationMappingAnnotationSpec(mapping)
                                 )
                 );
 
@@ -167,7 +189,7 @@ class ReSTAnnotationTemplateEngine {
                 .build();
     }
 
-    private AnnotationSpec getReSOperationMappingAnnotationSpec(ReSTOperationMapping mapping) {
+    private AnnotationSpec getReSTOperationMappingAnnotationSpec(ReSTOperationMapping mapping) {
         final AnnotationSpec.Builder builder = AnnotationSpec.builder(ReSTOperationMapping.class);
         builder.addMember("statusCode", "\"" + mapping.statusCode() + "\"");
         if (getOperationClass(mapping::responseClass).isPresent()) {
@@ -199,14 +221,9 @@ class ReSTAnnotationTemplateEngine {
     }
 
     private Set<ParameterSpec> renderParameters(List<ReSTOperationAnnotatedMethod.Parameter> argumentTypes) {
-        //TODO Improve logging System.out.println("Parameters: " + argumentTypes.size());
         return argumentTypes.stream()
-                .map(
-                        (entry) ->
-                                ParameterSpec.builder(TypeName.get(entry.getTypeMirror()), entry.getName()).build()
-                ).collect(
-                        Collectors.toSet()
-                );
+                .map((entry) -> ParameterSpec.builder(TypeName.get(entry.getTypeMirror()), entry.getName()).build())
+                .collect(Collectors.toSet());
     }
 
 }

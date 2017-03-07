@@ -1,6 +1,5 @@
 package org.devera.jest.client.invocations;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 import javax.ws.rs.client.Client;
 
@@ -19,10 +18,9 @@ public final class JeSTInvocationFactory {
         final Object clientInstance,
         final String methodName,
         final I request,
+        final Class<O> responseClass,
         final NamedParam... params)
     {
-
-        final Method method = ReflectionUtils.findMethod(clientInstance, methodName);
         final ReSTOperation operation = ReflectionUtils.findReSTOperation(clientInstance, methodName, request);
         final Map<String, Object> pathParams = ReflectionUtils.getPathParams(params);
 
@@ -35,7 +33,7 @@ public final class JeSTInvocationFactory {
                         operation,
                         pathParams,
                         request,
-                        (Class<O>) method.getReturnType()
+                        responseClass
                 );
             case POST:
                 return new JeSTPostInvocation<>(
@@ -45,7 +43,7 @@ public final class JeSTInvocationFactory {
                         operation,
                         pathParams,
                         request,
-                        (Class<O>) method.getReturnType()
+                        responseClass
                 );
             case DELETE:
                 return new JeSTDeleteInvocation<>(
@@ -55,7 +53,7 @@ public final class JeSTInvocationFactory {
                         operation,
                         pathParams,
                         request,
-                        (Class<O>) method.getReturnType()
+                        responseClass
                 );
             case PUT:
                 return new JeSTPutInvocation<>(
@@ -65,7 +63,7 @@ public final class JeSTInvocationFactory {
                         operation,
                         pathParams,
                         request,
-                        (Class<O>) method.getReturnType()
+                        responseClass
                 );
             case OPTIONS:
                 return new JeSTOptionsInvocation<>(
@@ -75,7 +73,7 @@ public final class JeSTInvocationFactory {
                         operation,
                         pathParams,
                         request,
-                        (Class<O>) method.getReturnType()
+                        responseClass
 
                 );
             default:
