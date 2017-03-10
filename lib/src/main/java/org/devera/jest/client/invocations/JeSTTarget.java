@@ -1,22 +1,44 @@
 package org.devera.jest.client.invocations;
 
-import org.devera.jest.client.ReflectionUtils;
+import java.net.URI;
+import java.util.Map;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
-import java.net.URI;
-import java.util.Map;
+
+import org.devera.jest.client.ReflectionUtils;
 
 public class JeSTTarget implements WebTarget
 {
     private final WebTarget originalWebTarget;
+    private Invocation.Builder originalBuilder;
 
     JeSTTarget(final WebTarget originalWebTarget)
     {
         this.originalWebTarget = originalWebTarget;
+    }
+
+    private JeSTTarget(final WebTarget originalWebTarget, final Invocation.Builder originalBuilder)
+    {
+        this.originalWebTarget = originalWebTarget;
+        this.originalBuilder = originalBuilder;
+    }
+
+    JeSTTarget resolveHeaderParams(Map<String, Object> headerParams)
+    {
+        final Invocation.Builder currentBuilder = getBuilder();
+        headerParams.forEach(currentBuilder::header);
+        return new JeSTTarget(originalWebTarget, currentBuilder);
+    }
+
+    private Invocation.Builder getBuilder() {
+        if (originalBuilder == null) {
+            this.originalBuilder = originalWebTarget.request();
+        }
+        return this.originalBuilder;
     }
 
     JeSTTarget resolveQueryParams(final Object request)
@@ -26,7 +48,7 @@ public class JeSTTarget implements WebTarget
         for (String queryParamName : queryParams.keySet()) {
             processedTarget = processedTarget.queryParam(queryParamName, queryParams.get(queryParamName));
         }
-        return new JeSTTarget(processedTarget);
+        return new JeSTTarget(processedTarget, originalBuilder);
     }
 
     JeSTTarget resolvePathParams(final Object request, final Map<String, Object> pathParams)
@@ -39,7 +61,7 @@ public class JeSTTarget implements WebTarget
             processedTarget = processedTarget.resolveTemplate(pathParam, pathParamsFromRequest.get(pathParam));
         }
 
-        return new JeSTTarget(processedTarget);
+        return new JeSTTarget(processedTarget, originalBuilder);
     }
 
     @Override
@@ -111,19 +133,19 @@ public class JeSTTarget implements WebTarget
     @Override
     public Invocation.Builder request()
     {
-        return originalWebTarget.request();
+        return getBuilder();
     }
 
     @Override
     public Invocation.Builder request(String... acceptedResponseTypes)
     {
-        return originalWebTarget.request(acceptedResponseTypes);
+        return getBuilder().accept(acceptedResponseTypes);
     }
 
     @Override
     public Invocation.Builder request(MediaType... acceptedResponseTypes)
     {
-        return originalWebTarget.request(acceptedResponseTypes);
+        return getBuilder().accept(acceptedResponseTypes);
     }
 
     @Override

@@ -2,9 +2,9 @@ package org.devera.jest.processor;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -30,7 +30,6 @@ import org.devera.jest.annotations.ReSTOperationMapping;
 import org.devera.jest.client.Configuration;
 import org.devera.jest.client.JeSTClient;
 import org.devera.jest.client.JeSTResult;
-import org.devera.jest.client.NamedParam;
 
 class ReSTAnnotationTemplateEngine {
 
@@ -119,15 +118,32 @@ class ReSTAnnotationTemplateEngine {
                 .addParameters(renderParameters(operation.getArgumentMapNameAndType()))
                 .addStatement(
                         "final $T<$T> result = jeSTClient.invoke(\""+operation.getOperationMethodName()+ "\", " + getInvocationParameters(operation) + ")",
-                        Stream.of(
-                                JeSTResult.class,
-                                TypeName.get(operation.getReturnType()),
-                                operation.getArgumentMapNameAndType().size() > 1 ? NamedParam.class : null
-                        ).filter(Objects::nonNull)
-                                .toArray()
+                        getStatementParameterTypes(operation)
                 )
                 .addStatement("return result.getPayload()")
                 .build();
+    }
+
+    private Object[] getStatementParameterTypes(ReSTOperationAnnotatedMethod operation) {
+        List parameterTypes = new ArrayList();
+        parameterTypes.add(JeSTResult.class);
+        parameterTypes.add(TypeName.get(operation.getReturnType()));
+        final Class[] operationParameterTypes = getOperationParameterTypes(operation);
+        if (operationParameterTypes != null) {
+            parameterTypes.addAll(Arrays.asList(operationParameterTypes));
+        }
+        return parameterTypes.toArray();
+    }
+
+    private Class[] getOperationParameterTypes(ReSTOperationAnnotatedMethod operation) {
+        if (operation.getArgumentMapNameAndType().size() <= 1) return null;
+
+        return operation
+                .getArgumentMapNameAndType()
+                .stream()
+                .skip(1)
+                .map(ReSTOperationAnnotatedMethod.Parameter::getTypeClassFromParameter)
+                .toArray(Class[]::new);
     }
 
     private String getInvocationParameters(final ReSTOperationAnnotatedMethod operation ) {
@@ -136,8 +152,6 @@ class ReSTAnnotationTemplateEngine {
         builder
             .add(getRequestInvocationParameter(operation))
             .add(getResponseInvocationParameter(operation));
-
-
 
         operation.getArgumentMapNameAndType()
                 .stream()

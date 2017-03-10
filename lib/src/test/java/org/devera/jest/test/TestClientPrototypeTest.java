@@ -20,6 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
+import org.mockserver.model.Header;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -440,5 +441,29 @@ public class TestClientPrototypeTest {
         );
     }
 
+    @Test
+    public void simplePostOperationWithHeaderParam_should_return_ok() {
+        String headerParamValue = "headerValue";
 
+        mockServerClient.when(
+                request()
+                .withMethod("POST")
+                .withPath("/")
+                .withHeader(new Header("headerParam", headerParamValue))
+        ).respond(
+                response()
+                .withStatusCode(200)
+        );
+
+        PostRequest request = new PostRequest();
+
+        new TestClientPrototype(configuration).simplePostWithHeaderParam(request, headerParamValue);
+
+        mockServerClient.verify(
+                request()
+                .withMethod("POST")
+                .withPath("/")
+                .withHeader(new Header("headerParam", "headerValue"))
+        );
+    }
 }
