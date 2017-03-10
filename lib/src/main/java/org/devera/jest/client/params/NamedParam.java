@@ -1,6 +1,6 @@
-package org.devera.jest.client;
+package org.devera.jest.client.params;
 
-public class NamedParam
+public abstract class NamedParam
 {
     private final String name;
     private final Object value;

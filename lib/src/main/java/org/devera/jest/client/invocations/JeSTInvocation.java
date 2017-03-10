@@ -1,5 +1,7 @@
 package org.devera.jest.client.invocations;
 
+import java.util.Map;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
@@ -11,10 +13,7 @@ import org.devera.jest.client.Configuration;
 import org.devera.jest.client.JeSTResult;
 import org.devera.jest.client.ReflectionUtils;
 
-import java.util.Map;
-
 import static org.devera.jest.client.ReflectionUtils.findOperationMapping;
-import static org.devera.jest.client.ReflectionUtils.getResponseClass;
 
 public abstract class JeSTInvocation<I, O> {
 
@@ -22,6 +21,7 @@ public abstract class JeSTInvocation<I, O> {
     private final Configuration configuration;
     private final Object clientInstance;
     private final ReSTOperation reSTOperation;
+    private final Map<String, Object> headerParams;
     private final Map<String, Object> pathParams;
     private final Class<O> responseClass;
 
@@ -32,6 +32,7 @@ public abstract class JeSTInvocation<I, O> {
             final Configuration configuration,
             final Object clientInstance,
             final ReSTOperation reSTOperation,
+            final Map<String, Object> headerParams,
             final Map<String, Object> pathParams,
             final I request,
             final Class<O> responseClass
@@ -39,6 +40,7 @@ public abstract class JeSTInvocation<I, O> {
         this.configuration = configuration;
         this.clientInstance = clientInstance;
         this.reSTOperation = reSTOperation;
+        this.headerParams = headerParams;
         this.pathParams = pathParams;
         this.request = request;
         this.jaxrsClient = jaxrsClient;
@@ -53,10 +55,11 @@ public abstract class JeSTInvocation<I, O> {
 
     protected abstract Invocation prepareInvocation();
 
-    final WebTarget resolveWebTarget() {
+    final JeSTTarget resolveWebTarget() {
         return new JeSTTarget(getApplicationWebTarget())
             .resolvePathParams(request, pathParams)
-            .resolveQueryParams(request);
+            .resolveQueryParams(request)
+            .resolveHeaderParams(headerParams);
     }
 
     final WebTarget getApplicationWebTarget() {

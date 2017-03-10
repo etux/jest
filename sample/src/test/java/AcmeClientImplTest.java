@@ -62,7 +62,7 @@ public class AcmeClientImplTest {
 
         GetRequest request = new GetRequest();
 
-        final AcmeClient testClientPrototype = new AcmeClientImp(configuration);
+        final AcmeClient testClientPrototype = getAcmeClientImp();
         Response response = testClientPrototype.simpleGetOperationWithInheritsReSTClientDefaultMappings(request);
 
         mockServerClient.verify(
@@ -96,7 +96,7 @@ public class AcmeClientImplTest {
         GetRequestWithParams request = new GetRequestWithParams();
         request.setParam("value");
 
-        final AcmeClient testClientPrototype = new AcmeClientImp(configuration);
+        final AcmeClient testClientPrototype = getAcmeClientImp();
         Response response = testClientPrototype.simpleGetOperationWithQueryParams(request);
 
         mockServerClient.verify(
@@ -131,7 +131,7 @@ public class AcmeClientImplTest {
         GetRequestWithPathParams request = new GetRequestWithPathParams();
         request.setPathParam("pathValue");
 
-        final AcmeClient testClientPrototype = new AcmeClientImp(configuration);
+        final AcmeClient testClientPrototype = getAcmeClientImp();
         Response response = testClientPrototype.simpleGetOperationWithPathParams(request);
 
         mockServerClient.verify(
@@ -165,7 +165,7 @@ public class AcmeClientImplTest {
 
         GetRequest request = new GetRequest();
 
-        final AcmeClient testClientPrototype = new AcmeClientImp(configuration);
+        final AcmeClient testClientPrototype = getAcmeClientImp();
         Response response = testClientPrototype.simpleGetOperationWithInheritsReSTClientDefaultMappings(request);
 
         mockServerClient.verify(
@@ -197,7 +197,7 @@ public class AcmeClientImplTest {
         PostRequest request = new PostRequest();
         request.setInput("input");
 
-        Response response = new AcmeClientImp(configuration).simplePostOperationWithOwnMappings(request);
+        Response response = getAcmeClientImp().simplePostOperationWithOwnMappings(request);
 
         assertThat(
                 response,
@@ -231,7 +231,7 @@ public class AcmeClientImplTest {
         PostRequest request = new PostRequest();
         request.setInput("input");
 
-        new AcmeClientImp(configuration).simplePostOperationWithOwnMappings(request);
+        getAcmeClientImp().simplePostOperationWithOwnMappings(request);
 
         mockServerClient.verify(
                 request()
@@ -259,7 +259,7 @@ public class AcmeClientImplTest {
         PostRequest request = new PostRequest();
         request.setInput("input");
 
-        new AcmeClientImp(configuration).simplePostOperationWithOwnMappingsAndPathParamInSignature(request, "pathValue");
+        getAcmeClientImp().simplePostOperationWithOwnMappingsAndPathParamInSignature(request, "pathValue");
 
         mockServerClient.verify(
             request()
@@ -288,7 +288,7 @@ public class AcmeClientImplTest {
         request.setPathName("pathValue");
         request.setBody("body");
 
-        new AcmeClientImp(configuration).simplePostOperationWithOwnMappingsAndPathParamInRequest(request);
+        getAcmeClientImp().simplePostOperationWithOwnMappingsAndPathParamInRequest(request);
 
         mockServerClient.verify(
             request()
@@ -296,6 +296,41 @@ public class AcmeClientImplTest {
                 .withPath("/pathValue")
                 .withHeader("Content-Type", "application/json")
                 .withBody("{\"body\":\"body\"}")
+        );
+    }
+
+    private AcmeClient getAcmeClientImp() {
+        return new AcmeClientImp(configuration);
+    }
+
+    @Test
+    public void simplePostOperationWithHeaderParam_should_return_ok() {
+
+        final String headerParam = "headerValue";
+
+        mockServerClient.when(
+            request()
+                .withMethod("POST")
+                .withHeader("Content-Type", "application/json")
+                .withHeader("headerParam", "headerValue")
+        ).respond(
+            response()
+                .withHeader("Content-Type", "application/json")
+                .withStatusCode(200)
+        );
+
+        PostRequest request = new PostRequest();
+        request.setInput("input");
+
+
+        getAcmeClientImp().simplePostWithHeaderParam(request, headerParam);
+
+        mockServerClient.verify(
+            request()
+                .withMethod("POST")
+                .withHeader("Content-Type", "application/json")
+                .withHeader("headerParam", "headerValue")
+                .withBody("{\"input\":\"input\"}")
         );
     }
 
@@ -311,7 +346,7 @@ public class AcmeClientImplTest {
                 .withStatusCode(200)
         );
 
-        new AcmeClientImp(configuration)
+        getAcmeClientImp()
                 .simpleDeleteOperation();
 
         mockServerClient.verify(
@@ -336,7 +371,7 @@ public class AcmeClientImplTest {
         final PutRequest request = new PutRequest();
         request.setBody("body");
 
-        Response response = new AcmeClientImp(configuration)
+        Response response = getAcmeClientImp()
                 .simplePutOperationWithOwnMappings(request);
 
         assertThat(
@@ -369,7 +404,7 @@ public class AcmeClientImplTest {
         request.setIdentifier(identifier);
         request.setBody("body");
 
-        Response response = new AcmeClientImp(configuration)
+        Response response = getAcmeClientImp()
             .simplePutOperationWithPathParamAndOwnMappings(request);
 
         assertThat(
@@ -401,7 +436,7 @@ public class AcmeClientImplTest {
         final PutRequest request = new PutRequest();
         request.setBody("body");
 
-        Response response = new AcmeClientImp(configuration)
+        Response response = getAcmeClientImp()
             .simplePutOperationWithPathParamOnSignature(request, identifier.toString());
 
         assertThat(
@@ -430,7 +465,7 @@ public class AcmeClientImplTest {
                 .withStatusCode(200)
         );
 
-        new AcmeClientImp(configuration).simpleOptionsOperation();
+        getAcmeClientImp().simpleOptionsOperation();
 
         mockServerClient.verify(
                 request()

@@ -5,7 +5,7 @@ import javax.ws.rs.client.Client;
 
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.client.Configuration;
-import org.devera.jest.client.NamedParam;
+import org.devera.jest.client.params.NamedParam;
 import org.devera.jest.client.ReflectionUtils;
 
 public final class JeSTInvocationFactory {
@@ -23,6 +23,7 @@ public final class JeSTInvocationFactory {
     {
         final ReSTOperation operation = ReflectionUtils.findReSTOperation(clientInstance, methodName, request);
         final Map<String, Object> pathParams = ReflectionUtils.getPathParams(params);
+        final Map<String, Object> headerParams = ReflectionUtils.getHeaderParams(params);
 
         switch(operation.method()) {
             case GET:
@@ -31,6 +32,7 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
+                        headerParams,
                         pathParams,
                         request,
                         responseClass
@@ -41,6 +43,7 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
+                        headerParams,
                         pathParams,
                         request,
                         responseClass
@@ -51,6 +54,7 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
+                        headerParams,
                         pathParams,
                         request,
                         responseClass
@@ -61,6 +65,7 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
+                        headerParams,
                         pathParams,
                         request,
                         responseClass
@@ -71,6 +76,7 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
+                        headerParams,
                         pathParams,
                         request,
                         responseClass

@@ -6,6 +6,7 @@ import javax.ws.rs.client.ClientBuilder;
 import com.google.common.base.Preconditions;
 import org.devera.jest.client.invocations.JeSTInvocation;
 import org.devera.jest.client.invocations.JeSTInvocationFactory;
+import org.devera.jest.client.params.NamedParam;
 
 public class JeSTClient {
 

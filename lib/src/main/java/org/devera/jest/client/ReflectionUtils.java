@@ -21,6 +21,9 @@ import org.devera.jest.annotations.ReSTQueryParam;
 import org.devera.jest.annotations.ReSTClient;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
+import org.devera.jest.client.params.HeaderParam;
+import org.devera.jest.client.params.NamedParam;
+import org.devera.jest.client.params.PathParam;
 
 public final class ReflectionUtils {
 
@@ -130,25 +133,41 @@ public final class ReflectionUtils {
         return (Class<I>) request.getClass();
     }
 
-    public static Map<String, Object> getPathParams(Object request) {
-        if (request instanceof NamedParam[]) {
-            return Arrays
-                .stream((NamedParam[]) request)
-                .collect(Collectors.toMap(
-                    NamedParam::getName,
-                    NamedParam::getValue
-                ));
+    public static Map<String, Object> getPathParams(Object pathParamsSource) {
+        if (pathParamsSource instanceof NamedParam[]) {
+            return getPathParams((NamedParam[]) pathParamsSource);
         }
-        return
-            Arrays.stream(request.getClass().getDeclaredFields())
-                .filter(isNotNull(request))
-                .filter(isPathParam())
-                .collect(
-                    Collectors.toMap(
-                        Field::getName,
-                        field -> getValue(request, field)
-                    )
-                );
+        return getPathParamsFromRequest(pathParamsSource);
+    }
+
+    private static Map<String, Object> getPathParamsFromRequest(Object request) {
+        return Arrays.stream(request.getClass().getDeclaredFields())
+            .filter(isNotNull(request))
+            .filter(isPathParam())
+            .collect(
+                Collectors.toMap(
+                    Field::getName,
+                    field -> getValue(request, field)
+                )
+            );
+    }
+
+    public static Map<String, Object> getHeaderParams(NamedParam[] params) {
+        return getParamsForType(params, HeaderParam.class);
+    }
+
+    private static Map<String, Object> getPathParams(NamedParam[] params) {
+        return getParamsForType(params, PathParam.class);
+    }
+
+    private static Map<String, Object> getParamsForType(NamedParam[] request, Class<? extends NamedParam> namedParamType) {
+        return Arrays
+            .stream(request)
+            .filter(namedParam -> namedParamType.isAssignableFrom(namedParam.getClass()))
+            .collect(Collectors.toMap(
+                NamedParam::getName,
+                NamedParam::getValue
+            ));
     }
 
     private static Predicate<? super Field> isPathParam()

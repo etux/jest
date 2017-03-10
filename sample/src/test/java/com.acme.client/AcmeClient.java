@@ -1,5 +1,6 @@
 package com.acme.client;
 
+import org.devera.jest.annotations.ReSTHeaderParam;
 import org.devera.jest.annotations.ReSTPathParam;
 import org.devera.jest.annotations.Protocol;
 import org.devera.jest.annotations.ReSTClient;
@@ -62,6 +63,11 @@ public interface AcmeClient {
         }
     )
     Response simplePostOperationWithOwnMappingsAndPathParamInRequest(PostRequestWithPathParam request);
+
+    @ReSTOperation(
+            method = POST
+    )
+    Response simplePostWithHeaderParam(PostRequest request, @ReSTHeaderParam String headerParam);
 
     @ReSTOperation(
             method = PUT,

@@ -1,8 +1,13 @@
 package org.devera.jest.test.client;
 
+import java.util.Map;
+
+import org.devera.jest.annotations.ReSTQueryParam;
+import org.devera.jest.client.params.HeaderParam;
 import org.devera.jest.client.JeSTClient;
 import org.devera.jest.client.JeSTResult;
-import org.devera.jest.client.NamedParam;
+import org.devera.jest.client.params.PathParam;
+import org.devera.jest.client.params.QueryParam;
 
 public class TestClientPrototype implements TestClient {
 
@@ -28,6 +33,12 @@ public class TestClientPrototype implements TestClient {
     }
 
     @Override
+    public Response simpleGetOperationWithQueryParams(GetRequestWithParams request, @ReSTQueryParam String param) {
+        final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithQueryParams", request, Response.class, new QueryParam("param", param));
+        return result.getPayload();
+    }
+
+    @Override
     public Response simpleGetOperationWithPathParams(GetRequestWithPathParams request)
     {
         final JeSTResult<Response> result = jeSTClient.invoke("simpleGetOperationWithPathParams", request, Response.class);
@@ -43,7 +54,7 @@ public class TestClientPrototype implements TestClient {
     @Override
     public Response simplePostOperationWithOwnMappingsAndPathParamInSignature(PostRequest request, String pathName)
     {
-        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInSignature", request, Response.class, new NamedParam("pathName", pathName));
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInSignature", request, Response.class, new PathParam("pathName", pathName));
         return result.getPayload();
     }
 
@@ -52,6 +63,22 @@ public class TestClientPrototype implements TestClient {
     {
         final JeSTResult<Response> result = jeSTClient.invoke("simplePostOperationWithOwnMappingsAndPathParamInRequest", request, Response.class);
         return result.getPayload();
+    }
+
+    @Override
+    public Response simplePostWithHeaderParam(PostRequest request, String headerParam) {
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePostWithHeaderParam", request, Response.class, new HeaderParam("headerParam", headerParam));
+        return result.getPayload();
+    }
+
+    @Override
+    public Response simplePostWithHeaderParamNameOverwriting(PostRequest request, String headerParam) {
+        return null;
+    }
+
+    @Override
+    public Response simplePostWithHeaderParams(PostRequest request, Map<String, String> headerParams) {
+        return null;
     }
 
     @Override
@@ -73,7 +100,7 @@ public class TestClientPrototype implements TestClient {
         final JeSTResult<Response> result = jeSTClient.invoke("simplePutOperationWithPathParamOnSignature",
             request,
             Response.class,
-            new NamedParam("identifier", identifier));
+            new PathParam("identifier", identifier));
 
         return result.getPayload();
     }

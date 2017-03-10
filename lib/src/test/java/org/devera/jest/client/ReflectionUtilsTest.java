@@ -6,6 +6,8 @@ import java.util.Map;
 import org.devera.jest.annotations.ReSTClient;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTPathParam;
+import org.devera.jest.client.params.NamedParam;
+import org.devera.jest.client.params.PathParam;
 import org.junit.Test;
 
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
@@ -19,8 +21,8 @@ public class ReflectionUtilsTest
     @Test
     public void getPathParams_from_namedParam_array() {
         final NamedParam[] namedParams = new NamedParam[] {
-            new NamedParam("name1", "value1"),
-            new NamedParam("name2", 2)
+            new PathParam("name1", "value1"),
+            new PathParam("name2", 2)
         };
 
         Map<String, ?> pathParams = ReflectionUtils.getPathParams(namedParams);

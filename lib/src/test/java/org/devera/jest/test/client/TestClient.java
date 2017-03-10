@@ -1,10 +1,14 @@
 package org.devera.jest.test.client;
 
-import org.devera.jest.annotations.ReSTPathParam;
+import java.util.Map;
+
 import org.devera.jest.annotations.Protocol;
 import org.devera.jest.annotations.ReSTClient;
+import org.devera.jest.annotations.ReSTHeaderParam;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
+import org.devera.jest.annotations.ReSTPathParam;
+import org.devera.jest.annotations.ReSTQueryParam;
 
 import static org.devera.jest.annotations.ReSTOperation.Operations.DELETE;
 import static org.devera.jest.annotations.ReSTOperation.Operations.OPTIONS;
@@ -26,6 +30,9 @@ public interface TestClient {
 
     @ReSTOperation
     Response simpleGetOperationWithQueryParams(GetRequestWithParams request);
+
+    @ReSTOperation
+    Response simpleGetOperationWithQueryParams(GetRequestWithParams request, @ReSTQueryParam String param);
 
     @ReSTOperation(
         path = "/{pathParam}"
@@ -88,7 +95,6 @@ public interface TestClient {
     )
     Response simplePutOperationWithPathParamOnSignature(PutRequest request, @ReSTPathParam String identifier);
 
-
     @ReSTOperation(
             method = DELETE
     )
@@ -98,4 +104,19 @@ public interface TestClient {
             method = OPTIONS
     )
     Response simpleOptionsOperation();
+
+    @ReSTOperation(
+            method = POST
+    )
+    Response simplePostWithHeaderParam(PostRequest request, @ReSTHeaderParam String headerParam);
+
+    @ReSTOperation(
+            method = POST
+    )
+    Response simplePostWithHeaderParamNameOverwriting(PostRequest request, @ReSTHeaderParam("anotherHeaderParam") String headerParam);
+
+    @ReSTOperation(
+            method = POST
+    )
+    Response simplePostWithHeaderParams(PostRequest request, @ReSTHeaderParam Map<String, String> headerParams);
 }
