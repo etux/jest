@@ -58,7 +58,9 @@ class ReSTAnnotationTemplateEngine {
 
     private void render(final ReSTClientAnnotatedClass reSTClientAnnotatedClass, final Writer builder) {
 
-        TypeSpec reSTClient = TypeSpec.classBuilder(reSTClientAnnotatedClass.getReSTClientImplClassName())
+        final String reSTClientImplClassName = reSTClientAnnotatedClass.getReSTClientImplClassName();
+        System.out.println("Rendering " + reSTClientImplClassName);
+        TypeSpec reSTClient = TypeSpec.classBuilder(reSTClientImplClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(TypeName.get(reSTClientAnnotatedClass.getReSTClientInterfaceType()))
                 .addField(Configuration.class, "configuration", Modifier.PRIVATE, Modifier.FINAL)
@@ -107,15 +109,20 @@ class ReSTAnnotationTemplateEngine {
     private MethodSpec renderOperation(ReSTOperationAnnotatedMethod operation) {
         final MethodSpec.Builder builder = MethodSpec.methodBuilder(operation.getOperationMethodName());
 
+        System.out.println("Rendering operation: " + operation.getOperationMethodName());
+
         if (!OPERATION_ANNOTATIONS_DISABLED) {
             builder.addAnnotation(renderReSTOperationAnnotation(operation));
         }
 
+        final String invocationParameters = getInvocationParameters(operation);
+
+        System.out.println("Invocation Parameters: " + invocationParameters);
         return builder
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
                 .returns(TypeName.get(operation.getReturnType()))
-                .addParameters(renderParameters(operation.getArgumentMapNameAndType()))
+                .addParameters(renderParameters(operation))
                 .addStatement(
                         "final $T<$T> result = jeSTClient.invoke(\""+operation.getOperationMethodName()+ "\", " + getInvocationParameters(operation) + ")",
                         getStatementParameterTypes(operation)
@@ -132,16 +139,17 @@ class ReSTAnnotationTemplateEngine {
         if (operationParameterTypes != null) {
             parameterTypes.addAll(Arrays.asList(operationParameterTypes));
         }
+
+        parameterTypes.stream().map(parameterType -> "Object" + parameterType.toString()).forEach(System.out::println);
+
         return parameterTypes.toArray();
     }
 
     private Class[] getOperationParameterTypes(ReSTOperationAnnotatedMethod operation) {
-        if (operation.getArgumentMapNameAndType().size() <= 1) return null;
 
         return operation
-                .getArgumentMapNameAndType()
+                .getArgumentMapNameAndType(ReSTOperationAnnotatedMethod.isParameter())
                 .stream()
-                .skip(1)
                 .map(ReSTOperationAnnotatedMethod.Parameter::getTypeClassFromParameter)
                 .toArray(Class[]::new);
     }
@@ -153,9 +161,8 @@ class ReSTAnnotationTemplateEngine {
             .add(getRequestInvocationParameter(operation))
             .add(getResponseInvocationParameter(operation));
 
-        operation.getArgumentMapNameAndType()
+        operation.getArgumentMapNameAndType(ReSTOperationAnnotatedMethod.isParameter())
                 .stream()
-                .skip(1)
                 .map(parameter -> getArgumentAsString(parameter, operation))
                 .forEach(builder::add);
 
@@ -165,8 +172,9 @@ class ReSTAnnotationTemplateEngine {
     }
 
     private String getRequestInvocationParameter(final ReSTOperationAnnotatedMethod operation) {
-        if (operation.getArgumentMapNameAndType().isEmpty()) return "null";
-        return operation.getArgumentMapNameAndType().get(0).getName();
+        return operation.getRequestArgument()
+                .map(ReSTOperationAnnotatedMethod.Parameter::getName)
+                .orElse(null);
     }
 
     private String getResponseInvocationParameter(final ReSTOperationAnnotatedMethod operation) {
@@ -174,8 +182,8 @@ class ReSTAnnotationTemplateEngine {
     }
 
     private String getArgumentAsString(ReSTOperationAnnotatedMethod.Parameter parameter, ReSTOperationAnnotatedMethod method) {
-        if (method.getArgumentMapNameAndType().get(0).equals(parameter)) {
-            return parameter.getName();
+        if (ReSTOperationAnnotatedMethod.Parameter.Type.BODY == parameter.getType()) {
+            parameter.getName();
         }
         return ("new $T(\"" + parameter.getName() +"\", "+ parameter.getName() +")");
     }
@@ -234,8 +242,9 @@ class ReSTAnnotationTemplateEngine {
         return Optional.of(clazz + ".class");
     }
 
-    private Set<ParameterSpec> renderParameters(List<ReSTOperationAnnotatedMethod.Parameter> argumentTypes) {
-        return argumentTypes.stream()
+    private Set<ParameterSpec> renderParameters(final ReSTOperationAnnotatedMethod operation) {
+
+        return operation.getArgumentMapNameAndType(ReSTOperationAnnotatedMethod.all()).stream()
                 .map((entry) -> ParameterSpec.builder(TypeName.get(entry.getTypeMirror()), entry.getName()).build())
                 .collect(Collectors.toSet());
     }

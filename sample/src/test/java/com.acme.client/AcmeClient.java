@@ -1,11 +1,12 @@
 package com.acme.client;
 
-import org.devera.jest.annotations.ReSTHeaderParam;
-import org.devera.jest.annotations.ReSTPathParam;
 import org.devera.jest.annotations.Protocol;
 import org.devera.jest.annotations.ReSTClient;
+import org.devera.jest.annotations.ReSTHeaderParam;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
+import org.devera.jest.annotations.ReSTPathParam;
+import org.devera.jest.annotations.ReSTQueryParam;
 
 import static org.devera.jest.annotations.ReSTOperation.Operations.DELETE;
 import static org.devera.jest.annotations.ReSTOperation.Operations.OPTIONS;
@@ -94,6 +95,10 @@ public interface AcmeClient {
     )
     Response simplePutOperationWithPathParamOnSignature(PutRequest request, @ReSTPathParam String identifier);
 
+    @ReSTOperation(
+            path="/path/{param}"
+    )
+    Response simpleGetOperationWithPathParamAndHeaderParam(@ReSTPathParam String pathParam, @ReSTQueryParam String queryParam, @ReSTHeaderParam String headerParam);
 
     @ReSTOperation(
             method = DELETE
