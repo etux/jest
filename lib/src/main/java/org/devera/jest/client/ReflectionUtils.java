@@ -64,10 +64,6 @@ public final class ReflectionUtils {
                 .orElseThrow(() -> new NoMappingDefinedException(clientInstance, operation, operationMatcher));
     }
 
-    private static Predicate<ReSTOperationMapping> getReSTOperationMappingPredicate(final int status) {
-        return reSTOperationMapping -> reSTOperationMapping.statusCode() == status;
-    }
-
     private static Stream<ReSTOperationMapping> getReSTOperationMappingsStream(final ReSTOperationMapping[] mappings) {
         return Arrays.stream(mappings);
     }
