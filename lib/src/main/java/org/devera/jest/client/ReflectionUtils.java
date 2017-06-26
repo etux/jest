@@ -13,8 +13,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.ws.rs.core.Response;
-
 import com.google.common.base.Preconditions;
 import org.devera.jest.annotations.ReSTPathParam;
 import org.devera.jest.annotations.ReSTQueryParam;
@@ -37,11 +35,11 @@ public final class ReflectionUtils {
                 .orElseThrow(() -> new AnnotationNotFoundException(ReSTOperation.class));
     }
 
-    public static ReSTOperationMapping findOperationMapping(Object clientInstance, ReSTOperation operation, Response response) {
+    public static ReSTOperationMapping findOperationMapping(Object clientInstance, ReSTOperation operation, Predicate<ReSTOperationMapping> operationMatcher) {
         return getOperationMappingForResponse(
                 getReSTOperationMappingsStream(operation.mappings()),
-                response)
-                .orElseGet(getReSTOperationMappingFromClientSupplier(clientInstance, operation, response));
+                operationMatcher)
+                .orElseGet(getReSTOperationMappingFromClientSupplier(clientInstance, operation, operationMatcher));
     }
 
     private static Stream<Class<?>> getClassWithReSTClientAnnotationStream(final Object clientInstance) {
@@ -61,24 +59,21 @@ public final class ReflectionUtils {
         return clazz -> clazz.getAnnotation(annotation) != null;
     }
 
-    private static Supplier<ReSTOperationMapping> getReSTOperationMappingFromClientSupplier(Object clientInstance, ReSTOperation operation, Response response) {
-        return () -> getReSTOperationMappingsStream(checkAndAssign(clientInstance).defaultMappings())
-                .filter(getReSTOperationMappingPredicate(response))
-                .findFirst()
-                .orElseThrow(() -> new NoMappingDefinedException(clientInstance, operation, response.getStatus()));
+    private static Supplier<ReSTOperationMapping> getReSTOperationMappingFromClientSupplier(Object clientInstance, ReSTOperation operation, Predicate<ReSTOperationMapping> operationMatcher) {
+        return () -> getOperationMappingForResponse(getReSTOperationMappingsStream(checkAndAssign(clientInstance).defaultMappings()), operationMatcher)
+                .orElseThrow(() -> new NoMappingDefinedException(clientInstance, operation, operationMatcher));
     }
 
-    private static Predicate<ReSTOperationMapping> getReSTOperationMappingPredicate(final Response response) {
-        return reSTOperationMapping -> reSTOperationMapping.statusCode() == response.getStatus();
+    private static Predicate<ReSTOperationMapping> getReSTOperationMappingPredicate(final int status) {
+        return reSTOperationMapping -> reSTOperationMapping.statusCode() == status;
     }
 
     private static Stream<ReSTOperationMapping> getReSTOperationMappingsStream(final ReSTOperationMapping[] mappings) {
         return Arrays.stream(mappings);
     }
 
-    private static Optional<ReSTOperationMapping> getOperationMappingForResponse(final Stream<ReSTOperationMapping> mappings,
-                                                                         final Response response) {
-        return mappings.filter(mapping -> mapping.statusCode() == response.getStatus()).findFirst();
+    private static Optional<ReSTOperationMapping> getOperationMappingForResponse(final Stream<ReSTOperationMapping> mappings, Predicate<ReSTOperationMapping> reSTOperationMappingPredicate) {
+        return mappings.filter(reSTOperationMappingPredicate).findFirst();
     }
 
     private static ReSTClient checkAndAssign(Object client) {

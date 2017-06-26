@@ -1,6 +1,7 @@
 package org.devera.jest.client.invocations;
 
 import java.util.Map;
+import java.util.function.Predicate;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.Invocation;
@@ -68,7 +69,7 @@ public abstract class JeSTInvocation<I, O> {
 
     private JeSTResult<O> processResponse(final Response response)
     {
-        final ReSTOperationMapping operationMapping = findOperationMapping(clientInstance, reSTOperation, response);
+        final ReSTOperationMapping operationMapping = findOperationMapping(clientInstance, reSTOperation, responseMatcher(response));
         final Class<O> responseClass = getResponseClass(operationMapping);
         return new JeSTResult<>(responseClass, response.readEntity(responseClass));
     }
@@ -79,5 +80,9 @@ public abstract class JeSTInvocation<I, O> {
             return this.responseClass;
         }
         return operationMappingResponseClass;
+    }
+
+    private Predicate<ReSTOperationMapping> responseMatcher(Response response) {
+        return mapping -> response.getStatus() == mapping.statusCode();
     }
 }
