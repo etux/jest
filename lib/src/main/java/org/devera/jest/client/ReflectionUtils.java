@@ -36,23 +36,35 @@ public final class ReflectionUtils {
     }
 
     public static ReSTOperationMapping findOperationMapping(Object clientInstance, ReSTOperation operation, Predicate<ReSTOperationMapping> operationMatcher) {
-        return getOperationMappingForResponse(
-                getReSTOperationMappingsStream(operation.mappings()),
-                operationMatcher)
-                .orElseGet(getReSTOperationMappingFromClientSupplier(clientInstance, operation, operationMatcher));
+        return
+                getOperationMappingForResponse(
+                    getReSTOperationMappingsStream(operation.mappings()),
+                    operationMatcher
+                )
+                .orElseGet(
+                        getReSTOperationMappingFromClientSupplier(
+                                clientInstance,
+                                operation,
+                                operationMatcher
+                        )
+                );
     }
 
     private static Stream<Class<?>> getClassWithReSTClientAnnotationStream(final Object clientInstance) {
-        return Arrays.stream(clientInstance.getClass().getInterfaces())
+        return getStream(clientInstance.getClass().getInterfaces())
                 .filter(hasAnnotation(ReSTClient.class));
     }
 
-    private static <R> Function<Class<?>, Method> getMethodSafely(final String methodName) {
+    private static Function<Class<?>, Method> getMethodSafely(final String methodName) {
         return clazz ->
                 Arrays.stream(clazz.getMethods())
-                    .filter(method -> method.getName().equals(methodName))
+                    .filter(isMethod(methodName))
                     .findFirst()
                     .orElseThrow(RuntimeException::new);
+    }
+
+    private static Predicate<Method> isMethod(String methodName) {
+        return method -> method.getName().equals(methodName);
     }
 
     private static Predicate<Class<?>> hasAnnotation(final Class annotation) {
@@ -60,12 +72,17 @@ public final class ReflectionUtils {
     }
 
     private static Supplier<ReSTOperationMapping> getReSTOperationMappingFromClientSupplier(Object clientInstance, ReSTOperation operation, Predicate<ReSTOperationMapping> operationMatcher) {
-        return () -> getOperationMappingForResponse(getReSTOperationMappingsStream(checkAndAssign(clientInstance).defaultMappings()), operationMatcher)
-                .orElseThrow(() -> new NoMappingDefinedException(clientInstance, operation, operationMatcher));
+        return () ->
+                getOperationMappingForResponse(getReSTOperationMappingsStream(checkAndAssign(clientInstance).defaultMappings()), operationMatcher)
+                    .orElseThrow(() -> new NoMappingDefinedException(clientInstance, operation, operationMatcher));
+    }
+
+    private static <R> Stream<R> getStream(final R[] array) {
+        return Arrays.stream(array);
     }
 
     private static Stream<ReSTOperationMapping> getReSTOperationMappingsStream(final ReSTOperationMapping[] mappings) {
-        return Arrays.stream(mappings);
+        return getStream(mappings);
     }
 
     private static Optional<ReSTOperationMapping> getOperationMappingForResponse(final Stream<ReSTOperationMapping> mappings, Predicate<ReSTOperationMapping> reSTOperationMappingPredicate) {
@@ -78,7 +95,7 @@ public final class ReflectionUtils {
     }
 
     private static ReSTClient getAnnotationFromClient(final Object client) {
-        return Arrays.stream(client.getClass().getInterfaces())
+        return getStream(client.getClass().getInterfaces())
                 .filter(hasAnnotation(ReSTClient.class))
                 .findFirst()
                 .map(clientInterface -> clientInterface.getAnnotation(ReSTClient.class))
@@ -132,7 +149,7 @@ public final class ReflectionUtils {
     }
 
     private static Map<String, Object> getPathParamsFromRequest(Object request) {
-        return Arrays.stream(request.getClass().getDeclaredFields())
+        return getStream(request.getClass().getDeclaredFields())
             .filter(isNotNull(request))
             .filter(isPathParam())
             .collect(
@@ -207,13 +224,13 @@ public final class ReflectionUtils {
     private static Object invokeGetterMethod(Object object, Field f)
     {
         try {
-            return getGetterMethodMethod(object, f).invoke(object);
+            return getGetterMethod(object, f).invoke(object);
         } catch(IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static Method getGetterMethodMethod(Object object, Field f) throws NoSuchMethodException
+    private static Method getGetterMethod(Object object, Field f) throws NoSuchMethodException
     {
         return object.getClass().getMethod(getGetterMethodName(f));
     }

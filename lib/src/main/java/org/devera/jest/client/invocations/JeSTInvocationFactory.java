@@ -19,11 +19,11 @@ public final class JeSTInvocationFactory {
         final String methodName,
         final I request,
         final Class<O> responseClass,
-        final NamedParam... params)
+        final NamedParam... generatedNamedParams)
     {
         final ReSTOperation operation = ReflectionUtils.findReSTOperation(clientInstance, methodName, request);
-        final Map<String, Object> pathParams = ReflectionUtils.getPathParams(params);
-        final Map<String, Object> headerParams = ReflectionUtils.getHeaderParams(params);
+        final Map<String, Object> pathGeneratedNamedParams = ReflectionUtils.getPathParams(generatedNamedParams);
+        final Map<String, Object> headerGeneratedNamedParams = ReflectionUtils.getHeaderParams(generatedNamedParams);
 
         switch(operation.method()) {
             case GET:
@@ -32,8 +32,8 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
-                        headerParams,
-                        pathParams,
+                        headerGeneratedNamedParams,
+                        pathGeneratedNamedParams,
                         request,
                         responseClass
                 );
@@ -43,8 +43,8 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
-                        headerParams,
-                        pathParams,
+                        headerGeneratedNamedParams,
+                        pathGeneratedNamedParams,
                         request,
                         responseClass
                 );
@@ -54,8 +54,8 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
-                        headerParams,
-                        pathParams,
+                        headerGeneratedNamedParams,
+                        pathGeneratedNamedParams,
                         request,
                         responseClass
                 );
@@ -65,8 +65,8 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
-                        headerParams,
-                        pathParams,
+                        headerGeneratedNamedParams,
+                        pathGeneratedNamedParams,
                         request,
                         responseClass
                 );
@@ -76,8 +76,8 @@ public final class JeSTInvocationFactory {
                         configuration,
                         clientInstance,
                         operation,
-                        headerParams,
-                        pathParams,
+                        headerGeneratedNamedParams,
+                        pathGeneratedNamedParams,
                         request,
                         responseClass
 
