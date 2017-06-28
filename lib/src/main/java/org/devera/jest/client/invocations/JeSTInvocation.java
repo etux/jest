@@ -58,8 +58,8 @@ public abstract class JeSTInvocation<I, O> {
 
     final JeSTTarget resolveWebTarget() {
         return new JeSTTarget(getApplicationWebTarget())
-            .resolvePathParams(request, pathParams)
-            .resolveQueryParams(request)
+            .resolveRequestPathParams(request, pathParams)
+            .resolveRequestQueryParams(request)
             .resolveHeaderParams(headerParams);
     }
 

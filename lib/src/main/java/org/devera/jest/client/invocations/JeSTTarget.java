@@ -41,7 +41,7 @@ public class JeSTTarget implements WebTarget
         return this.originalBuilder;
     }
 
-    JeSTTarget resolveQueryParams(final Object request)
+    JeSTTarget resolveRequestQueryParams(final Object request)
     {
         WebTarget processedTarget = this.originalWebTarget;
         final Map<String, ?> queryParams = ReflectionUtils.getQueryParams(request);
@@ -51,7 +51,7 @@ public class JeSTTarget implements WebTarget
         return new JeSTTarget(processedTarget, originalBuilder);
     }
 
-    JeSTTarget resolvePathParams(final Object request, final Map<String, Object> pathParams)
+    JeSTTarget resolveRequestPathParams(final Object request, final Map<String, Object> pathParams)
     {
         WebTarget processedTarget = this.originalWebTarget;
         final Map<String, Object> pathParamsFromRequest = ReflectionUtils.getPathParams(request);
