@@ -1,7 +1,9 @@
-
 dependencies {
 
     //Compile dependencies/
+    compileOnly group: 'org.projectlombok', name: 'lombok', version:'1.16.10'
+
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.21'
     compile group: 'com.squareup', name: 'javapoet', version: '1.8.0'
 
     //Test dependencies

@@ -17,12 +17,15 @@ import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
 
+import lombok.extern.slf4j.Slf4j;
+
 @SupportedAnnotationTypes({
         "org.devera.jest.annotations.ReSTClient",
         "org.devera.jest.annotations.ReSTOperation",
         "org.devera.jest.annotations.ReSTOperationMapping"
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
+@Slf4j
 public class ReSTAnnotationProcessor extends AbstractProcessor {
 
     private ReSTAnnotationTemplateEngine engine;
@@ -43,7 +46,7 @@ public class ReSTAnnotationProcessor extends AbstractProcessor {
 
     public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment roundEnv) {
         engine.process(roundEnv);
-        System.out.println("Render: " + engine.render(new ClassCreator(filer)));
+        log.info("Render: {}.", engine.render(new ClassCreator(filer)));
         return true;
     }
 
