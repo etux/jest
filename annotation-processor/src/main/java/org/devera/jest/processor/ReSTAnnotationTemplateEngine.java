@@ -24,6 +24,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import lombok.extern.slf4j.Slf4j;
 import org.devera.jest.annotations.ReSTClient;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
@@ -31,6 +32,7 @@ import org.devera.jest.client.Configuration;
 import org.devera.jest.client.JeSTClient;
 import org.devera.jest.client.JeSTResult;
 
+@Slf4j
 class ReSTAnnotationTemplateEngine {
 
     private static final boolean OPERATION_ANNOTATIONS_DISABLED = true;
@@ -46,7 +48,7 @@ class ReSTAnnotationTemplateEngine {
     }
 
     private ReSTClientAnnotatedClass processReSTClientAnnotation(final Element element) {
-        //TODO Improve logging System.out.println("Processing client annotation: " + element);
+        log.info("Processing client annotation {}.", element);
         return new ReSTClientAnnotatedClass((TypeElement) element);
     }
 
@@ -59,7 +61,7 @@ class ReSTAnnotationTemplateEngine {
     private void render(final ReSTClientAnnotatedClass reSTClientAnnotatedClass, final Writer builder) {
 
         final String reSTClientImplClassName = reSTClientAnnotatedClass.getReSTClientImplClassName();
-        System.out.println("Rendering " + reSTClientImplClassName);
+        log.info("Rendering {}.", reSTClientImplClassName);
         TypeSpec reSTClient = TypeSpec.classBuilder(reSTClientImplClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addSuperinterface(TypeName.get(reSTClientAnnotatedClass.getReSTClientInterfaceType()))
@@ -85,7 +87,7 @@ class ReSTAnnotationTemplateEngine {
             try {
                 builder.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("While trying to close the builder.", e);
             }
         }
     }
@@ -101,7 +103,8 @@ class ReSTAnnotationTemplateEngine {
     }
 
     private Iterable<MethodSpec> renderOperations(Set<ReSTOperationAnnotatedMethod> operations) {
-        //TODO Improve logging System.out.println("Operations: " + operations.size());
+        log.info("Operations: {}.", operations);
+
         return
                 operations.stream().map(this::renderOperation).collect(Collectors.toSet());
     }
@@ -109,7 +112,7 @@ class ReSTAnnotationTemplateEngine {
     private MethodSpec renderOperation(ReSTOperationAnnotatedMethod operation) {
         final MethodSpec.Builder builder = MethodSpec.methodBuilder(operation.getOperationMethodName());
 
-        System.out.println("Rendering operation: " + operation.getOperationMethodName());
+        log.info("Rendering operation: {}.", operation.getOperationMethodName());
 
         if (!OPERATION_ANNOTATIONS_DISABLED) {
             builder.addAnnotation(renderReSTOperationAnnotation(operation));
@@ -117,7 +120,7 @@ class ReSTAnnotationTemplateEngine {
 
         final String invocationParameters = getInvocationParameters(operation);
 
-        System.out.println("Invocation Parameters: " + invocationParameters);
+        log.info("Invocation Parameters: {}.", invocationParameters);
         return builder
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(Override.class)
