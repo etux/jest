@@ -1,5 +1,8 @@
 package org.devera.jest.processor;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -48,18 +51,12 @@ class ReSTOperationAnnotatedMethod {
     }
 
     private static String getName(VariableElement typeParameter) {
-        log.warn("Simple name {}", typeParameter.getSimpleName().toString());
-        log.warn("Annotation Mirrors {}", typeParameter.getAnnotationMirrors().toString());
-        log.warn("Annotation by type {}", typeParameter.getAnnotationsByType(ReSTPathParam.class).toString());
-        if (
-                typeParameter.getAnnotation(ReSTPathParam.class) != null &&
-                !ReSTPathParam.EMPTY_VALUE.equals(typeParameter.getAnnotation(ReSTPathParam.class).value())
-            )
-        {
-            return typeParameter.getAnnotation(ReSTPathParam.class).value();
-        }
+        return NameSolverFactory.getSolver(typeParameter).getName();
+    }
 
-        return typeParameter.getSimpleName().toString();
+    private static boolean hasReSTPathParamValue(VariableElement typeParameter) {
+        return typeParameter.getAnnotation(ReSTPathParam.class) != null &&
+        !ReSTPathParam.EMPTY_VALUE.equals(typeParameter.getAnnotation(ReSTPathParam.class).value());
     }
 
     static Predicate<VariableElement> isParameter() {
@@ -172,6 +169,80 @@ class ReSTOperationAnnotatedMethod {
             int result = typeMirror.hashCode();
             result = 31 * result + name.hashCode();
             return result;
+        }
+    }
+
+    private static class NameSolverFactory {
+        static NameSolver getSolver(VariableElement typeParameter) {
+            if (hasReSTPathParamValue(typeParameter)) {
+                return new AnnotationNameSolver<>(ReSTPathParam.class, typeParameter);
+            }
+            return new ReflectionNameSolver(typeParameter);
+        }
+    }
+
+    private interface NameSolver {
+        String getName();
+    }
+
+    private static class ReflectionNameSolver implements NameSolver {
+
+        private final VariableElement typeParameter;
+
+        ReflectionNameSolver(VariableElement typeParameter) {
+            this.typeParameter = typeParameter;
+        }
+
+        @Override
+        public String getName() {
+
+            log.info(
+                    "Getting name {} for parameter {} from reflection.",
+                    typeParameter.getSimpleName().toString(),
+                    typeParameter.getSimpleName().toString()
+            );
+
+            return typeParameter.getSimpleName().toString();
+        }
+    }
+
+    private static class AnnotationNameSolver<T extends Annotation> implements NameSolver {
+
+        private final Class<T> annotation;
+        private final VariableElement typeParameter;
+
+        AnnotationNameSolver(Class<T> annotation, VariableElement typeParameter) {
+            this.annotation = annotation;
+            this.typeParameter = typeParameter;
+        }
+
+        @Override
+        public String getName() {
+
+            log.info(
+                    "Getting name {} for parameter {} from annotation.",
+                    typeParameter.getSimpleName().toString(),
+                    typeParameter.getAnnotation(ReSTPathParam.class).value()
+            );
+
+            try {
+                final Method method = typeParameter.getAnnotation(annotation).annotationType().getMethod("value");
+                log.info("Field {}.", method);
+                if (method == null) {
+                    throw new RuntimeException("Field is null.");
+                }
+
+                final String o = String.class.cast(method.invoke(typeParameter.getAnnotation(annotation)));
+                log.info("Field value {}.", o);
+
+                if (o == null) {
+                    throw new RuntimeException("Field value is null.");
+                }
+                return o;
+
+            } catch (NoSuchMethodException  | InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }
