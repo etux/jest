@@ -19,7 +19,7 @@ dependencies {
 def generatedSources = "$buildDir/generated-src"
 def generatedOutputDir = file("$generatedSources")
 
-compileJava {
+compileTestJava {
     doFirst {
         generatedOutputDir.exists() || generatedOutputDir.mkdirs()
         options.compilerArgs = [
@@ -30,7 +30,7 @@ compileJava {
 
 
 sourceSets {
-    main {
+    test {
         java {
             srcDirs += generatedOutputDir
         }
