@@ -101,6 +101,14 @@ public interface AcmeClient {
     Response simpleGetOperationWithPathParamAndHeaderParam(@ReSTPathParam String pathParam, @ReSTQueryParam String queryParam, @ReSTHeaderParam String headerParam);
 
     @ReSTOperation(
+            path="/path/{differentParam}",
+            mappings = {
+                    @ReSTOperationMapping(statusCode = 200)
+            }
+    )
+    OkTestResponse simpleGetOperationWithDifferentNamedParam(@ReSTPathParam("differentParam") String pathParam);
+
+    @ReSTOperation(
             method = DELETE
     )
     Response simpleDeleteOperation();

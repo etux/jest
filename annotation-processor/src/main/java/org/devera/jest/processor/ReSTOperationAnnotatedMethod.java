@@ -9,6 +9,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 
+import lombok.extern.slf4j.Slf4j;
 import org.devera.jest.annotations.ReSTHeaderParam;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTPathParam;
@@ -19,6 +20,7 @@ import org.devera.jest.client.params.NamedParam;
 import org.devera.jest.client.params.PathParam;
 import org.devera.jest.client.params.QueryParam;
 
+@Slf4j
 class ReSTOperationAnnotatedMethod {
 
     private final ExecutableElement operationElement;
@@ -39,13 +41,28 @@ class ReSTOperationAnnotatedMethod {
                 .filter(filter)
                 .map(
                         typeParameter -> new Parameter(
-                                typeParameter.getSimpleName().toString(),
+                                getName(typeParameter),
                                 typeParameter.asType(),
                                 getType(typeParameter))
                 ).collect(Collectors.toList());
     }
 
-    public static Predicate<VariableElement> isParameter() {
+    private static String getName(VariableElement typeParameter) {
+        log.warn("Simple name {}", typeParameter.getSimpleName().toString());
+        log.warn("Annotation Mirrors {}", typeParameter.getAnnotationMirrors().toString());
+        log.warn("Annotation by type {}", typeParameter.getAnnotationsByType(ReSTPathParam.class).toString());
+        if (
+                typeParameter.getAnnotation(ReSTPathParam.class) != null &&
+                !ReSTPathParam.EMPTY_VALUE.equals(typeParameter.getAnnotation(ReSTPathParam.class).value())
+            )
+        {
+            return typeParameter.getAnnotation(ReSTPathParam.class).value();
+        }
+
+        return typeParameter.getSimpleName().toString();
+    }
+
+    static Predicate<VariableElement> isParameter() {
         return param -> hasAnyAnnotation(param, ReSTQueryParam.class, ReSTPathParam.class, ReSTHeaderParam.class);
     }
 
@@ -73,7 +90,7 @@ class ReSTOperationAnnotatedMethod {
 
     Optional<Parameter> getRequestArgument() {
         for (VariableElement parameter : this.operationElement.getParameters()) {
-            if (!hasAnyAnnotation(parameter, ReSTQueryParam.class, ReSTHeaderParam.class, ReSTQueryParam.class)) {
+            if (!hasAnyAnnotation(parameter, ReSTPathParam.class, ReSTHeaderParam.class, ReSTQueryParam.class)) {
                 return Optional.of(
                         new Parameter(
                                 parameter.getSimpleName().toString(),

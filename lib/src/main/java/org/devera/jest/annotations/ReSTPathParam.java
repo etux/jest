@@ -13,4 +13,8 @@ import java.lang.annotation.Target;
 })
 public @interface ReSTPathParam
 {
+
+    String EMPTY_VALUE = "";
+
+    String value() default EMPTY_VALUE;
 }
