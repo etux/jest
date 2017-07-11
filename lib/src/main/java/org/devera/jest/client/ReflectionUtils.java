@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -14,11 +15,11 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
-import org.devera.jest.annotations.ReSTPathParam;
-import org.devera.jest.annotations.ReSTQueryParam;
 import org.devera.jest.annotations.ReSTClient;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
+import org.devera.jest.annotations.ReSTPathParam;
+import org.devera.jest.annotations.ReSTQueryParam;
 import org.devera.jest.client.params.HeaderParam;
 import org.devera.jest.client.params.NamedParam;
 import org.devera.jest.client.params.PathParam;
@@ -149,6 +150,9 @@ public final class ReflectionUtils {
     }
 
     private static Map<String, Object> getPathParamsFromRequest(Object request) {
+        if (request == null) {
+            return new HashMap<>();
+        }
         return getStream(request.getClass().getDeclaredFields())
             .filter(isNotNull(request))
             .filter(isPathParam())
@@ -185,6 +189,10 @@ public final class ReflectionUtils {
 
     public static Map<String, ?> getQueryParams(Object request)
     {
+        if (request == null) {
+            return new HashMap<>();
+        }
+
         return
             Arrays.stream(request.getClass().getDeclaredFields())
                 .filter(isNotNull(request))
@@ -237,6 +245,7 @@ public final class ReflectionUtils {
 
     private static String getGetterMethodName(Field f)
     {
-        return "get" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1);
+        final String s = "get" + f.getName().substring(0, 1).toUpperCase() + f.getName().substring(1);
+        return s;
     }
 }

@@ -271,6 +271,28 @@ public class AcmeClientImplTest {
     }
 
     @Test
+    public void simpleGetOperation_with_differentNameParam_should_return_ok() {
+        mockServerClient.when(
+            request()
+                .withMethod("GET")
+                .withPath("/path/pathValue")
+        ).respond(
+            response()
+                .withStatusCode(200)
+                .withHeader("Content-Type", "application/json")
+                .withBody("{\"message\":\"content\"}")
+        );
+
+        getAcmeClientImp().simpleGetOperationWithDifferentNamedParam( "pathValue");
+
+        mockServerClient.verify(
+            request()
+                .withMethod("GET")
+                    .withPath("/path/pathValue")
+        );
+    }
+
+    @Test
     public void simplePostOperation_with_pathParamOnRequest_should_return_ok() {
 
         mockServerClient.when(
