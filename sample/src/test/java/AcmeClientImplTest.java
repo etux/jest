@@ -19,6 +19,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.mockserver.client.server.MockServerClient;
 import org.mockserver.junit.MockServerRule;
+import org.mockserver.model.Header;
+import org.mockserver.model.Parameter;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -321,10 +323,6 @@ public class AcmeClientImplTest {
         );
     }
 
-    private AcmeClient getAcmeClientImp() {
-        return new AcmeClientImp(configuration);
-    }
-
     @Test
     public void simplePostOperationWithHeaderParam_should_return_ok() {
 
@@ -494,6 +492,34 @@ public class AcmeClientImplTest {
                 .withMethod("OPTIONS")
                 .withPath("/")
         );
+    }
+
+    @Test
+    public void simpleGetOperationWithPathParamAndHeaderParam_should_return_ok() {
+
+
+        mockServerClient.when(
+                request()
+                .withMethod("GET")
+                .withPath("/path/pathValue")
+        ).respond(
+                response()
+                .withStatusCode(200)
+        );
+
+        getAcmeClientImp().simpleGetOperationWithPathParamAndHeaderParam("pathValue", "queryValue", "headerValue");
+
+        mockServerClient.verify(
+                request()
+                .withMethod("GET")
+                .withPath("/path/pathValue")
+                .withQueryStringParameter(Parameter.param("differentQueryParam", "queryValue"))
+                .withHeader(Header.header("headerParam", "headerValue"))
+        );
+    }
+
+    private AcmeClient getAcmeClientImp() {
+        return new AcmeClientImp(configuration);
     }
 
 
