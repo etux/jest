@@ -16,10 +16,11 @@ public class JeSTOptionsInvocation<I,O> extends JeSTInvocation<I, O> {
                           final ReSTOperation operation,
                           final Map<String, Object> headerParams,
                           final Map<String, Object> pathParams,
+                          final Map<String, Object> queryParams,
                           final I request,
                           final Class<O> returnType)
     {
-        super(jaxrsClient, configuration, clientInstance, operation, headerParams, pathParams, request, returnType);
+        super(jaxrsClient, configuration, clientInstance, operation, headerParams, pathParams, queryParams, request, returnType);
     }
 
     @Override

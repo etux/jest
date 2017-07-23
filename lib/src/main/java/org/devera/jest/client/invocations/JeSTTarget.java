@@ -41,13 +41,22 @@ public class JeSTTarget implements WebTarget
         return this.originalBuilder;
     }
 
-    JeSTTarget resolveRequestQueryParams(final Object request)
+    JeSTTarget resolveRequestQueryParams(final Object request, final Map<String, Object> queryParams)
     {
         WebTarget processedTarget = this.originalWebTarget;
-        final Map<String, ?> queryParams = ReflectionUtils.getQueryParams(request);
-        for (String queryParamName : queryParams.keySet()) {
-            processedTarget = processedTarget.queryParam(queryParamName, queryParams.get(queryParamName));
-        }
+
+        processedTarget = queryParams.entrySet().stream().reduce(
+                processedTarget,
+                (webTarget, stringObjectEntry) -> webTarget.queryParam(stringObjectEntry.getKey(), stringObjectEntry.getValue()),
+                (webTarget, webTarget2) -> webTarget2
+        );
+
+        processedTarget = ReflectionUtils.getQueryParamsFromRequest(request).entrySet().stream().reduce(
+                processedTarget,
+                (webTarget, entry) -> webTarget.queryParam(entry.getKey(), entry.getValue()),
+                (webTarget1, webTarget2) -> webTarget2
+        );
+
         return new JeSTTarget(processedTarget, originalBuilder);
     }
 

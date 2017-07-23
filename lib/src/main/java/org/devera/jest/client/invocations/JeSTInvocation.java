@@ -24,6 +24,7 @@ public abstract class JeSTInvocation<I, O> {
     private final ReSTOperation reSTOperation;
     private final Map<String, Object> headerParams;
     private final Map<String, Object> pathParams;
+    private final Map<String, Object> queryParams;
     private final Class<O> responseClass;
 
     final I request;
@@ -35,6 +36,7 @@ public abstract class JeSTInvocation<I, O> {
             final ReSTOperation reSTOperation,
             final Map<String, Object> headerParams,
             final Map<String, Object> pathParams,
+            final Map<String, Object> queryParams,
             final I request,
             final Class<O> responseClass
     ) {
@@ -43,6 +45,7 @@ public abstract class JeSTInvocation<I, O> {
         this.reSTOperation = reSTOperation;
         this.headerParams = headerParams;
         this.pathParams = pathParams;
+        this.queryParams = queryParams;
         this.request = request;
         this.jaxrsClient = jaxrsClient;
         this.responseClass = responseClass;
@@ -59,7 +62,7 @@ public abstract class JeSTInvocation<I, O> {
     final JeSTTarget resolveWebTarget() {
         return new JeSTTarget(getApplicationWebTarget())
             .resolveRequestPathParams(request, pathParams)
-            .resolveRequestQueryParams(request)
+            .resolveRequestQueryParams(request, queryParams)
             .resolveHeaderParams(headerParams);
     }
 
@@ -83,6 +86,7 @@ public abstract class JeSTInvocation<I, O> {
     }
 
     private Predicate<ReSTOperationMapping> responseMatcher(Response response) {
+        System.out.println("Finding matcher for response " + response.toString());
         return mapping -> response.getStatus() == mapping.statusCode();
     }
 }
