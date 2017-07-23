@@ -513,7 +513,7 @@ public class AcmeClientImplTest {
                 request()
                 .withMethod("GET")
                 .withPath("/path/pathValue")
-                .withQueryStringParameter(Parameter.param("queryParam", "queryValue"))
+                .withQueryStringParameter(Parameter.param("differentQueryParam", "queryValue"))
                 .withHeader(Header.header("headerParam", "headerValue"))
         );
     }

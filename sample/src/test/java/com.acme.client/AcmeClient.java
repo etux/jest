@@ -101,7 +101,7 @@ public interface AcmeClient {
                     @ReSTOperationMapping(statusCode = 200)
             }
     )
-    Response simpleGetOperationWithPathParamAndHeaderParam(@ReSTPathParam String pathParam, @ReSTQueryParam String queryParam, @ReSTHeaderParam String headerParam);
+    Response simpleGetOperationWithPathParamAndHeaderParam(@ReSTPathParam String pathParam, @ReSTQueryParam("differentQueryParam") String queryParam, @ReSTHeaderParam String headerParam);
 
     @ReSTOperation(
             path="/path/{differentParam}",
