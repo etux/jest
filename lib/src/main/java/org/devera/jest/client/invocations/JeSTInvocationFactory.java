@@ -24,6 +24,7 @@ public final class JeSTInvocationFactory {
         final ReSTOperation operation = ReflectionUtils.findReSTOperation(clientInstance, methodName, request);
         final Map<String, Object> pathGeneratedNamedParams = ReflectionUtils.getPathParams(generatedNamedParams);
         final Map<String, Object> headerGeneratedNamedParams = ReflectionUtils.getHeaderParams(generatedNamedParams);
+        final Map<String, Object> queryGeneratedNamedParams = ReflectionUtils.getQueryParams(generatedNamedParams);
 
         switch(operation.method()) {
             case GET:
@@ -34,6 +35,7 @@ public final class JeSTInvocationFactory {
                         operation,
                         headerGeneratedNamedParams,
                         pathGeneratedNamedParams,
+                        queryGeneratedNamedParams,
                         request,
                         responseClass
                 );
@@ -45,6 +47,7 @@ public final class JeSTInvocationFactory {
                         operation,
                         headerGeneratedNamedParams,
                         pathGeneratedNamedParams,
+                        queryGeneratedNamedParams,
                         request,
                         responseClass
                 );
@@ -56,6 +59,7 @@ public final class JeSTInvocationFactory {
                         operation,
                         headerGeneratedNamedParams,
                         pathGeneratedNamedParams,
+                        queryGeneratedNamedParams,
                         request,
                         responseClass
                 );
@@ -67,6 +71,7 @@ public final class JeSTInvocationFactory {
                         operation,
                         headerGeneratedNamedParams,
                         pathGeneratedNamedParams,
+                        queryGeneratedNamedParams,
                         request,
                         responseClass
                 );
@@ -78,6 +83,7 @@ public final class JeSTInvocationFactory {
                         operation,
                         headerGeneratedNamedParams,
                         pathGeneratedNamedParams,
+                        queryGeneratedNamedParams,
                         request,
                         responseClass
 

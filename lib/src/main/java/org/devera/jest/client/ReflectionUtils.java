@@ -23,6 +23,7 @@ import org.devera.jest.annotations.ReSTQueryParam;
 import org.devera.jest.client.params.HeaderParam;
 import org.devera.jest.client.params.NamedParam;
 import org.devera.jest.client.params.PathParam;
+import org.devera.jest.client.params.QueryParam;
 
 public final class ReflectionUtils {
 
@@ -172,6 +173,10 @@ public final class ReflectionUtils {
         return getParamsForType(params, PathParam.class);
     }
 
+    public static Map<String, Object> getQueryParams(NamedParam[] params) {
+        return getParamsForType(params, QueryParam.class);
+    }
+
     private static Map<String, Object> getParamsForType(NamedParam[] request, Class<? extends NamedParam> namedParamType) {
         return Arrays
             .stream(request)
@@ -187,12 +192,12 @@ public final class ReflectionUtils {
         return field -> field.getAnnotation(ReSTPathParam.class) != null;
     }
 
-    public static Map<String, ?> getQueryParams(Object request)
+    public static Map<String, Object> getQueryParamsFromRequest(Object request)
     {
         if (request == null) {
             return new HashMap<>();
         }
-
+        //TODO implement
         return
             Arrays.stream(request.getClass().getDeclaredFields())
                 .filter(isNotNull(request))

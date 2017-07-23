@@ -245,11 +245,11 @@ class ReSTAnnotationTemplateEngine {
         return Optional.of(clazz + ".class");
     }
 
-    private Set<ParameterSpec> renderParameters(final ReSTOperationAnnotatedMethod operation) {
+    private List<ParameterSpec> renderParameters(final ReSTOperationAnnotatedMethod operation) {
 
         return operation.getArgumentMapNameAndType(ReSTOperationAnnotatedMethod.all()).stream()
                 .map((entry) -> ParameterSpec.builder(TypeName.get(entry.getTypeMirror()), entry.getName()).build())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
 }

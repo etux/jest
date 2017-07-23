@@ -96,9 +96,12 @@ public interface AcmeClient {
     Response simplePutOperationWithPathParamOnSignature(PutRequest request, @ReSTPathParam String identifier);
 
     @ReSTOperation(
-            path="/path/{param}"
+            path="/path/{pathParam}",
+            mappings = {
+                    @ReSTOperationMapping(statusCode = 200)
+            }
     )
-    Response simpleGetOperationWithPathParamAndHeaderParam(@ReSTPathParam String pathParam, @ReSTQueryParam String queryParam, @ReSTHeaderParam String headerParam);
+    Response simpleGetOperationWithPathParamAndHeaderParam(@ReSTPathParam String pathParam, @ReSTQueryParam("differentQueryParam") String queryParam, @ReSTHeaderParam String headerParam);
 
     @ReSTOperation(
             path="/path/{differentParam}",
