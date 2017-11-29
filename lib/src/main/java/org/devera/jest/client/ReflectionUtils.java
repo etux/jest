@@ -1,5 +1,7 @@
 package org.devera.jest.client;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -16,6 +18,7 @@ import java.util.stream.Stream;
 
 import com.google.common.base.Preconditions;
 import org.devera.jest.annotations.ReSTClient;
+import org.devera.jest.annotations.ReSTHeaderParam;
 import org.devera.jest.annotations.ReSTOperation;
 import org.devera.jest.annotations.ReSTOperationMapping;
 import org.devera.jest.annotations.ReSTPathParam;
@@ -29,12 +32,22 @@ public final class ReflectionUtils {
 
     private ReflectionUtils(){}
 
-    public static <R> ReSTOperation findReSTOperation(final Object clientInstance, final String methodName, final R request) {
+    /**
+     * Given a client instance, a method name, a class representing the request payload, it finds the corresponding
+     * ReSTOperation that it is annotated with.
+     *
+     * @param clientInstance instance of which the method is found.
+     * @param methodName name of the method
+     * @param bodyArgClass class of the method parameter
+     * @return ReSTOperation annotation of the corresponding method.
+     * @throws AnnotationNotFoundException in case the annotation was not found.
+     */
+    public static ReSTOperation findReSTOperation(final Object clientInstance, final String methodName, final Class bodyArgClass) {
         return getClassWithReSTClientAnnotationStream(clientInstance)
-                .map(getMethodSafely(methodName))
+                .map(getMethodSafely(methodName, bodyArgClass))
                 .map(method -> method.getAnnotation(ReSTOperation.class))
                 .findFirst()
-                .orElseThrow(() -> new AnnotationNotFoundException(ReSTOperation.class));
+                .orElseThrow(() -> new AnnotationNotFoundException(ReSTOperation.class, clientInstance.getClass()));
     }
 
     public static ReSTOperationMapping findOperationMapping(Object clientInstance, ReSTOperation operation, Predicate<ReSTOperationMapping> operationMatcher) {
@@ -57,20 +70,42 @@ public final class ReflectionUtils {
                 .filter(hasAnnotation(ReSTClient.class));
     }
 
-    private static Function<Class<?>, Method> getMethodSafely(final String methodName) {
-        return clazz ->
-                Arrays.stream(clazz.getMethods())
-                    .filter(isMethod(methodName))
-                    .findFirst()
-                    .orElseThrow(RuntimeException::new);
+    private static Function<Class<?>, Method> getMethodSafely(final String methodName, final Class bodyArgClass) {
+        return clazz -> {
+            if (bodyArgClass == null) {
+                return Arrays.stream(clazz.getMethods())
+                        .filter(isMethod(methodName))
+                        .findFirst()
+                        .orElseThrow(() -> new MethodNotFoundException(clazz, methodName, bodyArgClass));
+            } else {
+                return Arrays.stream(clazz.getMethods())
+                        .filter(isMethod(methodName))
+                        .filter((isMethodWithRequest()))
+                        .filter(isMethodWithRequestClass(bodyArgClass))
+                        .findFirst()
+                        .orElseThrow(() -> new MethodNotFoundException(clazz, methodName, bodyArgClass));
+            }
+
+        };
     }
 
     private static Predicate<Method> isMethod(String methodName) {
         return method -> method.getName().equals(methodName);
     }
 
-    private static Predicate<Class<?>> hasAnnotation(final Class annotation) {
-        return clazz -> clazz.getAnnotation(annotation) != null;
+    private static Predicate<Method> isMethodWithRequest() {
+        return method -> Arrays.stream(method.getParameters())
+                .anyMatch(ReflectionUtils.hasAnnotation(ReSTQueryParam.class, ReSTHeaderParam.class, ReSTPathParam.class).negate());
+    }
+
+    private static Predicate<Method> isMethodWithRequestClass(final Class requestClass) {
+        return method ->
+                Arrays.stream(method.getParameterTypes())
+                .anyMatch(clazz -> clazz.equals(requestClass));
+    }
+
+    private static Predicate<AnnotatedElement> hasAnnotation(final Class<? extends Annotation>... annotations) {
+        return annotatedElement -> Arrays.stream(annotations).anyMatch(annotatedElement::isAnnotationPresent);
     }
 
     private static Supplier<ReSTOperationMapping> getReSTOperationMappingFromClientSupplier(Object clientInstance, ReSTOperation operation, Predicate<ReSTOperationMapping> operationMatcher) {
@@ -101,7 +136,7 @@ public final class ReflectionUtils {
                 .filter(hasAnnotation(ReSTClient.class))
                 .findFirst()
                 .map(clientInterface -> clientInterface.getAnnotation(ReSTClient.class))
-                .orElseThrow(() -> new AnnotationNotFoundException(ReSTClient.class));
+                .orElseThrow(() -> new AnnotationNotFoundException(ReSTClient.class, client.getClass()));
     }
 
     public static <O> Class<O> getResponseClass(final ReSTOperationMapping operationMapping)
@@ -110,11 +145,12 @@ public final class ReflectionUtils {
         return operationMapping.exceptionClass();
     }
 
-    public static Method findMethod(final Object clientInstance,
-                                        final String methodName)
+    static Method findMethod(final Object clientInstance,
+                             final String methodName,
+                             final Class parameterClass)
     {
         return getClassWithReSTClientAnnotationStream(clientInstance)
-                    .map(getMethodSafely(methodName))
+                    .map(getMethodSafely(methodName, parameterClass))
                     .findFirst()
                     .orElse(null);
     }
@@ -134,13 +170,6 @@ public final class ReflectionUtils {
 
     static String stringify(ReSTOperationMapping mapping) {
         return mapping.statusCode() + mapping.responseClass().getSimpleName();
-    }
-
-    static <I> Class<I> getClassOrNull(I request) {
-        if (request == null) {
-            return null;
-        }
-        return (Class<I>) request.getClass();
     }
 
     public static Map<String, Object> getPathParams(Object pathParamsSource) {
@@ -211,7 +240,7 @@ public final class ReflectionUtils {
 
     private static Predicate<? super Field> isQueryParam()
     {
-        return field -> field.getAnnotation(ReSTQueryParam.class) != null || !isPathParam().test(field);
+        return field -> (field.getAnnotation(ReSTQueryParam.class) != null) || !isPathParam().test(field);
     }
 
     private static Predicate<Field> isNotNull(Object request)
@@ -221,9 +250,10 @@ public final class ReflectionUtils {
 
     private static <T> T getValue(final Object object, final Field f) {
         return
-            Optional.ofNullable((T) invokeGetterMethod(object, f))
-                .map(v -> getCollectionOrSingle(v))
-                .orElse(null);
+            Optional
+                    .ofNullable((T) invokeGetterMethod(object, f))
+                    .map(v -> getCollectionOrSingle(v))
+                    .orElse(null);
     }
 
     private static <T> T getCollectionOrSingle(T v)
