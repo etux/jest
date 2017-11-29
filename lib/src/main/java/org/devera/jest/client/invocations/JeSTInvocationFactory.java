@@ -1,6 +1,8 @@
 package org.devera.jest.client.invocations;
 
 import java.util.Map;
+import java.util.Optional;
+
 import javax.ws.rs.client.Client;
 
 import org.devera.jest.annotations.ReSTOperation;
@@ -21,7 +23,7 @@ public final class JeSTInvocationFactory {
         final Class<O> responseClass,
         final NamedParam... generatedNamedParams)
     {
-        final ReSTOperation operation = ReflectionUtils.findReSTOperation(clientInstance, methodName, request);
+        final ReSTOperation operation = ReflectionUtils.findReSTOperation(clientInstance, methodName, getRequestClassOrNull(request));
         final Map<String, Object> pathGeneratedNamedParams = ReflectionUtils.getPathParams(generatedNamedParams);
         final Map<String, Object> headerGeneratedNamedParams = ReflectionUtils.getHeaderParams(generatedNamedParams);
         final Map<String, Object> queryGeneratedNamedParams = ReflectionUtils.getQueryParams(generatedNamedParams);
@@ -91,6 +93,12 @@ public final class JeSTInvocationFactory {
             default:
                 throw new IllegalArgumentException("Method " + operation.method() + " not supported.");
         }
+    }
+
+    private static <I> Class<?> getRequestClassOrNull(I request) {
+        return Optional.ofNullable(request)
+                .map(Object::getClass)
+                .orElse(null);
     }
 
 }
