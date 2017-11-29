@@ -177,7 +177,15 @@ class ReSTOperationAnnotatedMethod {
             if (hasReSTPathParamValue(typeParameter)) {
                 return new AnnotationNameSolver<>(ReSTPathParam.class, typeParameter);
             }
+            if (hasReSTQueryParamValue(typeParameter)) {
+                return new AnnotationNameSolver<>(ReSTQueryParam.class, typeParameter);
+            }
             return new ReflectionNameSolver(typeParameter);
+        }
+
+        private static boolean hasReSTQueryParamValue(VariableElement typeParameter) {
+            return typeParameter.getAnnotation(ReSTQueryParam.class) != null &&
+            !ReSTQueryParam.EMPTY_VALUE.equals(typeParameter.getAnnotation(ReSTQueryParam.class).value());
         }
     }
 
@@ -221,27 +229,23 @@ class ReSTOperationAnnotatedMethod {
 
             log.info(
                     "Getting name {} for parameter {} from annotation.",
-                    typeParameter.getSimpleName().toString(),
-                    typeParameter.getAnnotation(ReSTPathParam.class).value()
+                    typeParameter.getSimpleName(),
+                    typeParameter.getAnnotation(annotation)
             );
 
             try {
                 final Method method = typeParameter.getAnnotation(annotation).annotationType().getMethod("value");
                 log.info("Field {}.", method);
-                if (method == null) {
-                    throw new RuntimeException("Field is null.");
-                }
 
                 final String o = String.class.cast(method.invoke(typeParameter.getAnnotation(annotation)));
                 log.info("Field value {}.", o);
 
-                if (o == null) {
-                    throw new RuntimeException("Field value is null.");
-                }
                 return o;
 
-            } catch (NoSuchMethodException  | InvocationTargetException | IllegalAccessException e) {
-                throw new RuntimeException(e);
+            } catch (final NoSuchMethodException e) {
+                throw new RuntimeException("Field is null, this is an error in the implementation of the annotation itself. All @ReST annotations must implement the value field.", e);
+            } catch (InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException("Field value is null, this an error in the implementation of the annotation itself. All @ReST annotations must provide a default value for the value field.", e);
             }
         }
     }

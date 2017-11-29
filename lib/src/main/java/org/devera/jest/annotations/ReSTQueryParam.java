@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 })
 public @interface ReSTQueryParam
 {
-    String EMPTY = "";
+    String EMPTY_VALUE = "";
 
-    String value() default EMPTY;
+    String value() default EMPTY_VALUE;
 }

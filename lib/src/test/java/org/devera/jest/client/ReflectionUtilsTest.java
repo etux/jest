@@ -42,9 +42,8 @@ public class ReflectionUtilsTest
     public void findMethod() {
 
         Client clientInstance = new Client() {};
-        Object request = new Object();
 
-        Method method = ReflectionUtils.findMethod(clientInstance, "method");
+        Method method = ReflectionUtils.findMethod(clientInstance, "method", Object.class);
 
         assertThat(method, is(notNullValue()));
 
@@ -57,7 +56,7 @@ public class ReflectionUtilsTest
         Object request = new Object();
         String pathParam = "pathValue";
 
-        Method method = ReflectionUtils.findMethod(clientInstance, "methodWithPathParams");
+        Method method = ReflectionUtils.findMethod(clientInstance, "methodWithPathParams", Object.class);
 
         assertThat(method, is(notNullValue()));
         assertThat(method.getParameterCount(), is(2));
