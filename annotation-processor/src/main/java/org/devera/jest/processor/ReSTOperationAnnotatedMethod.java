@@ -3,7 +3,9 @@ package org.devera.jest.processor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -57,6 +59,11 @@ class ReSTOperationAnnotatedMethod {
     private static boolean hasReSTPathParamValue(VariableElement typeParameter) {
         return typeParameter.getAnnotation(ReSTPathParam.class) != null &&
         !ReSTPathParam.EMPTY_VALUE.equals(typeParameter.getAnnotation(ReSTPathParam.class).value());
+    }
+
+    private static boolean hasReSTQueryParamValue(VariableElement typeParameter) {
+        return typeParameter.getAnnotation(ReSTQueryParam.class) != null &&
+        !ReSTQueryParam.EMPTY_VALUE.equals(typeParameter.getAnnotation(ReSTQueryParam.class).value());
     }
 
     static Predicate<VariableElement> isParameter() {
@@ -174,6 +181,8 @@ class ReSTOperationAnnotatedMethod {
 
     private static class NameSolverFactory {
         static NameSolver getSolver(VariableElement typeParameter) {
+            checkNoMoreThanOneAnnotation(typeParameter);
+
             if (hasReSTPathParamValue(typeParameter)) {
                 return new AnnotationNameSolver<>(ReSTPathParam.class, typeParameter);
             }
@@ -183,9 +192,18 @@ class ReSTOperationAnnotatedMethod {
             return new ReflectionNameSolver(typeParameter);
         }
 
-        private static boolean hasReSTQueryParamValue(VariableElement typeParameter) {
-            return typeParameter.getAnnotation(ReSTQueryParam.class) != null &&
-            !ReSTQueryParam.EMPTY_VALUE.equals(typeParameter.getAnnotation(ReSTQueryParam.class).value());
+        private static void checkNoMoreThanOneAnnotation(VariableElement typeParameter) {
+            if (
+                    Arrays.asList(
+                        ReSTQueryParam.class,
+                        ReSTPathParam.class,
+                        ReSTHeaderParam.class)
+                        .stream()
+                        .filter(annotation -> !Objects.isNull(typeParameter.getAnnotation(annotation)))
+                        .count() > 1)
+            {
+                throw new IllegalArgumentException("Type parameter " + typeParameter + " has more than one ReST annotations");
+            }
         }
     }
 
@@ -228,7 +246,7 @@ class ReSTOperationAnnotatedMethod {
         public String getName() {
 
             log.info(
-                    "Getting name {} for parameter {} from annotation.",
+                    "Getting name {} for parameter from annotation {}.",
                     typeParameter.getSimpleName(),
                     typeParameter.getAnnotation(annotation)
             );
