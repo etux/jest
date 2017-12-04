@@ -466,4 +466,29 @@ public class TestClientPrototypeTest {
                 .withHeader(new Header("headerParam", "headerValue"))
         );
     }
+
+    @Test
+    public void simplePostWithHeaderParamNameOverwriting_should_return_ok() {
+
+        String headerParamValue = "headerValue";
+
+                mockServerClient.when(
+                        request()
+                        .withMethod("POST")
+                        .withPath("/")
+                        .withHeader(new Header("anotherHeaderParam", headerParamValue))
+                ).respond(
+                        response()
+                        .withStatusCode(200)
+                );
+
+        new TestClientPrototype(configuration).simplePostWithHeaderParamNameOverwriting(new PostRequest(), headerParamValue);
+
+        mockServerClient.verify(
+                request()
+                .withMethod("POST")
+                .withPath("/")
+                .withHeader(new Header("anotherHeaderParam", headerParamValue))
+        );
+    }
 }

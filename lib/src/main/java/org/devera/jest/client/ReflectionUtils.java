@@ -16,7 +16,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.google.common.base.Preconditions;
 import org.devera.jest.annotations.ReSTClient;
 import org.devera.jest.annotations.ReSTHeaderParam;
 import org.devera.jest.annotations.ReSTOperation;
@@ -71,17 +70,20 @@ public final class ReflectionUtils {
     }
 
     private static Function<Class<?>, Method> getMethodSafely(final String methodName, final Class bodyArgClass) {
-        return clazz -> {
+        return clazz ->
+        {
             if (bodyArgClass == null) {
-                return Arrays.stream(clazz.getMethods())
+                return getStream(clazz.getMethods())
                         .filter(isMethod(methodName))
                         .findFirst()
                         .orElseThrow(() -> new MethodNotFoundException(clazz, methodName, bodyArgClass));
             } else {
-                return Arrays.stream(clazz.getMethods())
-                        .filter(isMethod(methodName))
-                        .filter((isMethodWithRequest()))
-                        .filter(isMethodWithRequestClass(bodyArgClass))
+                return getStream(clazz.getMethods())
+                        .filter(
+                                isMethod(methodName)
+                                        .and(isMethodWithRequest())
+                                        .and(isMethodWithRequestClass(bodyArgClass))
+                        )
                         .findFirst()
                         .orElseThrow(() -> new MethodNotFoundException(clazz, methodName, bodyArgClass));
             }
@@ -110,28 +112,40 @@ public final class ReflectionUtils {
 
     private static Supplier<ReSTOperationMapping> getReSTOperationMappingFromClientSupplier(Object clientInstance, ReSTOperation operation, Predicate<ReSTOperationMapping> operationMatcher) {
         return () ->
-                getOperationMappingForResponse(getReSTOperationMappingsStream(checkAndAssign(clientInstance).defaultMappings()), operationMatcher)
-                    .orElseThrow(() -> new NoMappingDefinedException(clientInstance, operation, operationMatcher));
+                getOperationMappingForResponse(
+                        getReSTOperationMappingsStream(
+                                checkAndAssign(clientInstance).defaultMappings()
+                        ),
+                        operationMatcher
+                )
+                        .orElseThrow(() -> new NoMappingDefinedException(clientInstance, operation, operationMatcher));
     }
 
     private static <R> Stream<R> getStream(final R[] array) {
-        return Arrays.stream(array);
+        if (array != null) {
+            return Arrays.stream(array);
+        }
+        return Stream.empty();
     }
 
     private static Stream<ReSTOperationMapping> getReSTOperationMappingsStream(final ReSTOperationMapping[] mappings) {
         return getStream(mappings);
     }
 
-    private static Optional<ReSTOperationMapping> getOperationMappingForResponse(final Stream<ReSTOperationMapping> mappings, Predicate<ReSTOperationMapping> reSTOperationMappingPredicate) {
-        return mappings.filter(reSTOperationMappingPredicate).findFirst();
+    private static Optional<ReSTOperationMapping> getOperationMappingForResponse(
+            final Stream<ReSTOperationMapping> mappings,
+            final Predicate<ReSTOperationMapping> reSTOperationMappingFilterPredicate
+    ) {
+        return mappings.filter(reSTOperationMappingFilterPredicate).findFirst();
     }
 
     private static ReSTClient checkAndAssign(Object client) {
-        Preconditions.checkArgument(getAnnotationFromClient(client) != null);
-        return getAnnotationFromClient(client);
+        return Optional
+                .ofNullable(get(client))
+                .orElseThrow(() -> new IllegalArgumentException(client.getClass().getCanonicalName() + " has not ReSTClient annotation"));
     }
 
-    private static ReSTClient getAnnotationFromClient(final Object client) {
+    private static ReSTClient get(final Object client) {
         return getStream(client.getClass().getInterfaces())
                 .filter(hasAnnotation(ReSTClient.class))
                 .findFirst()
