@@ -73,7 +73,8 @@ public class TestClientPrototype implements TestClient {
 
     @Override
     public Response simplePostWithHeaderParamNameOverwriting(PostRequest request, String headerParam) {
-        return null;
+        final JeSTResult<Response> result = jeSTClient.invoke("simplePostWithHeaderParamNameOverwriting", request, Response.class, new HeaderParam("anotherHeaderParam", headerParam));
+        return result.getPayload();
     }
 
     @Override
