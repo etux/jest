@@ -2,14 +2,13 @@ package org.devera.jest.client.invocations;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.Set;
 
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
-
-import org.devera.jest.client.ReflectionUtils;
 
 public class JeSTTarget implements WebTarget
 {
@@ -27,10 +26,14 @@ public class JeSTTarget implements WebTarget
         this.originalBuilder = originalBuilder;
     }
 
-    JeSTTarget resolveHeaderParams(Map<String, Object> headerParams)
+    JeSTTarget resolveHeaderParams(final JeSTInvocationHelper helper)
     {
         final Invocation.Builder currentBuilder = getBuilder();
-        headerParams.forEach(currentBuilder::header);
+
+        for (Map.Entry<String, Object> entry : (Set<Map.Entry<String, Object>>) helper.getHeaderParams()) {
+            currentBuilder.header(entry.getKey(), entry.getValue());
+        }
+
         return new JeSTTarget(originalWebTarget, currentBuilder);
     }
 
@@ -41,33 +44,22 @@ public class JeSTTarget implements WebTarget
         return this.originalBuilder;
     }
 
-    JeSTTarget resolveRequestQueryParams(final Object request, final Map<String, Object> queryParams)
+    JeSTTarget resolveRequestQueryParams(final JeSTInvocationHelper helper)
     {
         WebTarget processedTarget = this.originalWebTarget;
 
-        processedTarget = queryParams.entrySet().stream().reduce(
-                processedTarget,
-                (webTarget, stringObjectEntry) -> webTarget.queryParam(stringObjectEntry.getKey(), stringObjectEntry.getValue()),
-                (webTarget, webTarget2) -> webTarget2
-        );
-
-        processedTarget = ReflectionUtils.getQueryParamsFromRequest(request).entrySet().stream().reduce(
-                processedTarget,
-                (webTarget, entry) -> webTarget.queryParam(entry.getKey(), entry.getValue()),
-                (webTarget1, webTarget2) -> webTarget2
-        );
-
+        for (Map.Entry<String, Object> entry : (Set<Map.Entry<String, Object>>) helper.getQueryParams().entrySet()) {
+            processedTarget = processedTarget.queryParam(entry.getKey(), entry.getValue());
+        }
         return new JeSTTarget(processedTarget, originalBuilder);
     }
 
-    JeSTTarget resolveRequestPathParams(final Object request, final Map<String, Object> pathParams)
+    JeSTTarget resolveRequestPathParams(final JeSTInvocationHelper helper)
     {
         WebTarget processedTarget = this.originalWebTarget;
-        final Map<String, Object> pathParamsFromRequest = ReflectionUtils.getPathParams(request);
-        pathParams.forEach(pathParamsFromRequest::put);
 
-        for (String pathParam : pathParamsFromRequest.keySet()) {
-            processedTarget = processedTarget.resolveTemplate(pathParam, pathParamsFromRequest.get(pathParam));
+        for (Map.Entry<String, Object> entry : (Set<Map.Entry<String, Object>>) helper.getQueryParams()) {
+            processedTarget = processedTarget.resolveTemplate(entry.getKey(), entry.getValue());
         }
 
         return new JeSTTarget(processedTarget, originalBuilder);

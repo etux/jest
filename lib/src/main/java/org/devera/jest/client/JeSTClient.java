@@ -6,6 +6,7 @@ import javax.ws.rs.client.ClientBuilder;
 import com.google.common.base.Preconditions;
 import org.devera.jest.client.invocations.JeSTInvocation;
 import org.devera.jest.client.invocations.JeSTInvocationFactory;
+import org.devera.jest.client.invocations.JeSTInvocationHelper;
 import org.devera.jest.client.params.NamedParam;
 
 public class JeSTClient {
@@ -30,15 +31,27 @@ public class JeSTClient {
             final Class<O> responseClass,
             final NamedParam... generatedNamedParams
     ) {
-        final JeSTResult<O> result = createInvocation(methodName, request, responseClass, generatedNamedParams).invoke();
+        final JeSTResult<O> result = createInvocation(
+                new JeSTInvocationHelper(
+                        clientInstance,
+                        methodName,
+                        request,
+                        responseClass,
+                        generatedNamedParams)
+        )
+                .invoke();
         if (result.isError()) {
             throw result.getException();
         }
         return result;
     }
 
-    private <I, O> JeSTInvocation<I, O> createInvocation(final String methodName, final I request, final Class<O> responseClass, final NamedParam... generatedNamedParams) {
-        return JeSTInvocationFactory.create(jaxrsClient, configuration, clientInstance, methodName, request, responseClass, generatedNamedParams);
+    private <I, O> JeSTInvocation<I, O> createInvocation(final JeSTInvocationHelper<I,O> invocationHelper) {
+        return JeSTInvocationFactory.create(
+                jaxrsClient,
+                configuration,
+                invocationHelper
+        );
     }
 
 
